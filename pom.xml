@@ -1,4 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
         http://maven.apache.org/maven-v4_0_0.xsd">
@@ -7,7 +7,7 @@
     <artifactId>jspc</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <name>jspc</name>
-    
+
     <dependencies>
         <dependency>
             <groupId>io.undertow.jastow</groupId>
@@ -59,18 +59,30 @@
 
     <profiles>
         <profile>
-            <id>wildfly19</id>
+            <id>wildfly18</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
                 <version.io.undertow.jastow.jastow>2.0.7.Final</version.io.undertow.jastow.jastow>
                 <version.org.jboss.metadata.jboss-metadata-web>13.0.0.Final</version.org.jboss.metadata.jboss-metadata-web>
-                <version.org.jboss.spec.javax.servlet.jsp.jboss-jsp-api>1.0.2.Final</version.org.jboss.spec.javax.servlet.jsp.jboss-jsp-api>
+                <version.org.jboss.spec.javax.servlet.jsp.jboss-jsp-api>2.0.0.Final</version.org.jboss.spec.javax.servlet.jsp.jboss-jsp-api>
                 <version.org.jboss.logmanager.log4j-jboss-logmanager>1.2.0.Final</version.org.jboss.logmanager.log4j-jboss-logmanager>
-                <version.org.apache.taglibs.taglibs-standard-spec>1.2.6.RC1-redhat-1</version.org.apache.taglibs.taglibs-standard-spec>
+                <version.org.apache.taglibs.taglibs-standard-spec>1.2.6-RC1</version.org.apache.taglibs.taglibs-standard-spec>
                 <version.org.jboss.spec.javax.faces.jboss-jsf-api>3.0.0.Final</version.org.jboss.spec.javax.faces.jboss-jsf-api>
                 <version.com.sun.faces.jsf-impl>2.3.9.SP03</version.com.sun.faces.jsf-impl>
+            </properties>
+        </profile>
+        <profile>
+            <id>eap72</id>
+            <properties>
+                <version.io.undertow.jastow.jastow>2.0.7.Final-redhat-00001</version.io.undertow.jastow.jastow>
+                <version.org.jboss.metadata.jboss-metadata-web>12.0.0.Final-redhat-00001</version.org.jboss.metadata.jboss-metadata-web>
+                <version.org.jboss.spec.javax.servlet.jsp.jboss-jsp-api>1.0.3.Final-redhat-1</version.org.jboss.spec.javax.servlet.jsp.jboss-jsp-api>
+                <version.org.jboss.logmanager.log4j-jboss-logmanager>1.1.6.Final-redhat-00001</version.org.jboss.logmanager.log4j-jboss-logmanager>
+                <version.org.apache.taglibs.taglibs-standard-spec>1.2.6.RC1-redhat-1</version.org.apache.taglibs.taglibs-standard-spec>
+                <version.org.jboss.spec.javax.faces.jboss-jsf-api>2.3.5.SP1-redhat-1</version.org.jboss.spec.javax.faces.jboss-jsf-api>
+                <version.com.sun.faces.jsf-impl>2.3.5.SP3-redhat-00001</version.com.sun.faces.jsf-impl>
             </properties>
         </profile>
     </profiles>
