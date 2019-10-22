@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.JarURLConnection;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -61,7 +62,7 @@ public class JspC {
 
     private static final Logger log = Logger.getLogger(JspC.class);
 
-    private enum WEBXML_LEVEL {INC_WEBXML, FRG_WEBXML, ALL_WEBXML, MERGE_WEBXML};
+    public enum WEBXML_LEVEL {INC_WEBXML, FRG_WEBXML, ALL_WEBXML, MERGE_WEBXML};
 
     private final JspCServletContext ctx;
     private final JspCOptions options;
@@ -71,17 +72,203 @@ public class JspC {
     private String targetClassName = null;
     private String webxmlFile;
     private Charset webxmlEncoding = StandardCharsets.UTF_8;
-    private final ClassLoader loader;
-    private final JspRuntimeContext rctxt;
-    private final JspCServletConfig config;
-    private final HashMap<String, TagLibraryInfo> jspTagLibraries;
-    private final List<String> pages = new ArrayList<>();
+    private ClassLoader loader;
+    private JspRuntimeContext rctxt;
+    private JspCServletConfig config;
+    private HashMap<String, TagLibraryInfo> jspTagLibraries;
+    private List<String> pages = new ArrayList<>();
     private Iterator<String> pagesIterator;
     private JspCResults results;
     private WEBXML_LEVEL webxmlLevel;
     private boolean failOnError = true;
     private boolean failFast = false;
     private int threadCount = (Runtime.getRuntime().availableProcessors() / 2) + 1;
+
+    static {
+        // TODO: using log4j because logmanager needs to be initialized at
+        //       startup using the "-Djava.util.logging.manager=org.jboss.logmanager.LogManager"
+        //       and that doesn't work inside the "exec-maven-plugin" easily
+        PropertyConfigurator.configure(Thread.currentThread().getContextClassLoader().getResource("log4j.properties"));
+    }
+
+    // getters
+
+    public String getUriRoot() {
+        return uriRoot;
+    }
+
+    public String getUriBase() {
+        return uriBase;
+    }
+
+    public String getTargetPackage() {
+        return targetPackage;
+    }
+
+    public String getTargetClassName() {
+        return targetClassName;
+    }
+
+    public String getWebxmlFile() {
+        return webxmlFile;
+    }
+
+    public Charset getWebxmlEncoding() {
+        return webxmlEncoding;
+    }
+
+    public WEBXML_LEVEL getWebxmlLevel() {
+        return webxmlLevel;
+    }
+
+    public boolean isFailOnError() {
+        return failOnError;
+    }
+
+    public boolean isFailFast() {
+        return failFast;
+    }
+
+    public int getThreadCount() {
+        return threadCount;
+    }
+
+    public JspCOptions getOptions()  {
+        return this.options;
+    }
+
+    public Level getDebugLevel() {
+        Logger jspcLogger = Logger.getLogger(this.getClass().getPackage().getName());
+        return jspcLogger.getLevel();
+    }
+
+    // setters
+
+    public JspC setDieLevel(int dieLevel) {
+        if (results == null) {
+            results = new JspCResults(dieLevel);
+        } else {
+            results.setErrorCode(dieLevel);
+        }
+        return this;
+    }
+
+    public JspC setUriRoot(String uriRoot) throws IOException {
+        if (uriRoot == null) {
+            this.uriRoot = null;
+        } else {
+            File dir = new File(uriRoot);
+            this.uriRoot = dir.getCanonicalPath();
+        }
+        ctx.setUriRoot(this.uriRoot);
+        return this;
+    }
+
+    public JspC setOutputDir(String outputDir) {
+        options.setScratchDir(new File(outputDir));
+        return this;
+    }
+
+    public JspC setDebugLevel(Level level) {
+        Logger jspcLogger = Logger.getLogger(this.getClass().getPackage().getName());
+        jspcLogger.setLevel(level);
+        return this;
+    }
+
+    public JspC setTargetPackage(String targetPackage) {
+        this.targetPackage = targetPackage;
+        return this;
+    }
+
+    public JspC setTargetClassName(String targetClassName) {
+        this.targetClassName = targetClassName;
+        return this;
+    }
+
+    public JspC setMappedFile(boolean mappedFile) {
+        this.options.setMappedFile(mappedFile);
+        return this;
+    }
+
+    public JspC setUriBase(String uriBase) {
+        this.uriBase = uriBase;
+        return this;
+    }
+
+    public JspC setFailOnError(boolean failOnError) {
+        this.failOnError = failOnError;
+        return this;
+    }
+
+    public JspC setFailFast(boolean failFast) {
+        this.failFast = failFast;
+        return this;
+    }
+
+    public JspC setWebxmlLevel(WEBXML_LEVEL webxmlLevel) {
+        this.webxmlLevel = webxmlLevel;
+        return this;
+    }
+
+    public JspC setWebxmlFile(String webxmlFile) {
+        this.webxmlFile = webxmlFile;
+        return this;
+    }
+
+    public JspC setWebxmlEncoding(Charset webxmlEncoding) {
+        this.webxmlEncoding = webxmlEncoding;
+        return this;
+    }
+
+    public JspC setIeClassId(String ieClassId) {
+        this.options.setIeClassId(ieClassId);
+        return this;
+    }
+
+    public JspC setClassPath(String classpath) {
+        this.options.setClassPath(classpath);
+        return this;
+    }
+
+    public JspC setXpoweredBy(boolean xpoweredBy) {
+        this.options.setXpoweredBy(xpoweredBy);
+        return this;
+    }
+
+    public JspC setTrimSpaces(boolean trimSpaces) {
+        this.options.setTrimSpaces(trimSpaces);
+        return this;
+    }
+
+    public JspC setJavaEncoding(String javaEncoding) {
+        this.options.setJavaEncoding(javaEncoding);
+        return this;
+    }
+
+    public JspC setCompilerSourceVM(String compilerSourceVM) {
+        this.options.setCompilerSourceVM(compilerSourceVM);
+        return this;
+    }
+
+    public JspC setCompilerTargetVM(String compilerTargetVM) {
+        this.options.setCompilerTargetVM(compilerTargetVM);
+        return this;
+    }
+
+    public JspC setThreadCount(int threadCount) {
+        this.threadCount = threadCount;
+        return this;
+    }
+
+    public JspC setPages(List<String> pages) {
+        this.pages = pages;
+        return this;
+    }
+
+    public JspC addPage(String page) {
+        this.pages.add(page);
+        return this;
+    }
 
     // usage
 
@@ -135,15 +322,15 @@ public class JspC {
 
     // parse methods
 
-    private String parseDirectory(String option, String file) {
+    private String parseDirectory(String option, String file) throws IOException {
         File dir = new File(file);
         if (!dir.isDirectory()) {
             usage(String.format("Invalid directory \"%s\" for option \"%s\"", file, option));
         }
-        return file;
+        return dir.getCanonicalPath();
     }
 
-    private String parseWritableFile(String option, String file) {
+    private String parseWritableFile(String option, String file) throws IOException {
         File f = new File(file);
         if (f.isDirectory() || (f.exists() && !f.canWrite())) {
             usage(String.format("Invalid writable file \"%s\" for option \"%s\"", file, option));
@@ -154,7 +341,7 @@ public class JspC {
                 usage(String.format("Invalid writable file \"%s\" for option \"%s\"", file, option));
             }
         }
-        return file;
+        return f.getCanonicalPath();
     }
 
     private Charset parseCharset(String option, String charset) {
@@ -175,56 +362,59 @@ public class JspC {
         }
     }
 
-    private void setDebugLevel(Level l) {
+    private void setDebugLevelIfNecessary(Level l) {
         Logger jspcLogger = Logger.getLogger(this.getClass().getPackage().getName());
-        if (jspcLogger.getLevel() == null || jspcLogger.getLevel().toInt() > l.toInt()) {
+        if (jspcLogger.getLevel().toInt() > l.toInt()) {
             jspcLogger.setLevel(l);
         }
     }
 
-    private void parseArgs(String... args) {
+    private void parseArgs(String... args) throws IOException {
         boolean finished = false;
         int i;
         for (i = 0; i < args.length && !finished; i++) {
             switch(args[i]) {
                 case "-webapp":
                 case "-uriroot":
-                    uriRoot = parseDirectory(args[i], args[++i]);
+                    this.setUriRoot(parseDirectory(args[i], args[++i]));
                     break;
                 case "-help":
                     usage(null);
                     break;
                 case "-d":
                     String outputDir = parseDirectory(args[i], args[++i]);
-                    options.setScratchDir(new File(outputDir));
+                    this.setOutputDir(outputDir);
                     break;
                 case "-vv":
-                    setDebugLevel(Level.TRACE);
+                    setDebugLevelIfNecessary(Level.TRACE);
                     break;
                 case "-v":
-                    setDebugLevel(Level.DEBUG);
+                    setDebugLevelIfNecessary(Level.DEBUG);
                     break;
                 case "-s":
-                    setDebugLevel(Level.INFO);
+                    setDebugLevelIfNecessary(Level.INFO);
                     break;
                 case "-l":
-                    setDebugLevel(Level.WARN);
+                    setDebugLevelIfNecessary(Level.WARN);
                     break;
                 case "-p":
-                    targetPackage = args[++i];
+                    setTargetPackage(args[++i]);
                     break;
                 case "-c":
-                    targetClassName = args[++i];
+                    setTargetClassName(args[++i]);
                     break;
                 case "-mapped":
-                    options.setMappedFile(true);
+                    setMappedFile(true);
                     break;
-                case "die":
+                case "-die":
                     int errorCode = parseInteger(args[i], args[++i]);
-                    this.results = new JspCResults(errorCode);
+                    if (errorCode <= 0) {
+                        usage(String.format("Invalid number \"%d\" code for option \"die\"", errorCode));
+                    }
+                    setDieLevel(errorCode);
                     break;
                 case "-uribase":
-                    uriBase = args[++i];
+                    setUriBase(args[++i]);
                     break;
                 // "compile" flag has no sense because we always do this
                 // the JSP is compiled and if exists it is checked for changes
@@ -232,64 +422,64 @@ public class JspC {
                 //    usage(String.format("Not implemented option \"%s\"", args[i]));
                 //    break;
                 case "-noFailOnError":
-                    this.failOnError = false;
+                    setFailOnError(false);
                     break;
                 case "-failFast":
-                    this.failFast = true;
+                    setFailFast(true);
                     break;
                 case "-webinc":
-                    webxmlFile = parseWritableFile(args[i], args[++i]);
                     if (webxmlLevel != null) {
-                        usage(String.format("Invalid -webinc option because the ouput was previously set to \"%s\"", webxmlLevel.name()));
+                        usage(String.format("Invalid -webinc option because the output was previously set to \"%s\"", webxmlLevel.name()));
                     }
-                    webxmlLevel = WEBXML_LEVEL.INC_WEBXML;
+                    setWebxmlFile(parseWritableFile(args[i], args[++i]));
+                    setWebxmlLevel(WEBXML_LEVEL.INC_WEBXML);
                     break;
                 case "-webfrg":
-                    webxmlFile = parseWritableFile(args[i], args[++i]);
                     if (webxmlLevel != null) {
-                        usage(String.format("Invalid -webfrg option because the ouput was previously set to \"%s\"", webxmlLevel.name()));
+                        usage(String.format("Invalid -webfrg option because the output was previously set to \"%s\"", webxmlLevel.name()));
                     }
-                    webxmlLevel = WEBXML_LEVEL.FRG_WEBXML;
+                    setWebxmlFile(parseWritableFile(args[i], args[++i]));
+                    setWebxmlLevel(WEBXML_LEVEL.FRG_WEBXML);
                     break;
                 case "-webxml":
-                    webxmlFile = parseWritableFile(args[i], args[++i]);
                     if (webxmlLevel != null) {
-                        usage(String.format("Invalid -webxml option because the ouput was previously set to \"%s\"", webxmlLevel.name()));
+                        usage(String.format("Invalid -webxml option because the output was previously set to \"%s\"", webxmlLevel.name()));
                     }
-                    webxmlLevel = WEBXML_LEVEL.ALL_WEBXML;
+                    setWebxmlFile(parseWritableFile(args[i], args[++i]));
+                    setWebxmlLevel(WEBXML_LEVEL.ALL_WEBXML);
                     break;
                 case "-addwebxmlmappings":
                     if (webxmlLevel != null) {
-                        usage(String.format("Invalid -addwebxmlmappings option because the ouput was previously set to \"%s\"", webxmlLevel.name()));
+                        usage(String.format("Invalid -addwebxmlmappings option because the output was previously set to \"%s\"", webxmlLevel.name()));
                     }
-                    webxmlLevel = WEBXML_LEVEL.MERGE_WEBXML;
+                    setWebxmlLevel(WEBXML_LEVEL.MERGE_WEBXML);
                     break;
                 case "-webxmlencoding":
-                    webxmlEncoding = parseCharset(args[i], args[++i]);
+                    setWebxmlEncoding(parseCharset(args[i], args[++i]));
                     break;
                 case "-ieplugin":
-                    options.setIeClassId(args[++i]);
+                    setIeClassId(args[++i]);
                     break;
                 case "-classpath":
-                    options.setClassPath(args[++i]);
+                    setClassPath(args[++i]);
                     break;
                 case "-xpoweredBy":
-                    options.setXpoweredBy(true);
+                    setXpoweredBy(true);
                     break;
                 case "-trimSpaces":
-                    options.setTrimSpaces(true);
+                    setTrimSpaces(true);
                     break;
                 case "-javaEncoding":
-                    options.setJavaEncoding(args[++i]);
+                    setJavaEncoding(args[++i]);
                     break;
                 case "-source":
-                    options.setCompilerSourceVM(args[++i]);
+                    setCompilerSourceVM(args[++i]);
                     break;
                 case "-target":
-                    options.setCompilerTargetVM(args[++i]);
+                    setCompilerTargetVM(args[++i]);
                     break;
                 case "-threadCount":
-                    threadCount = parseInteger(args[i], args[++i]);
+                    setThreadCount(parseInteger(args[i], args[++i]));
                     if (threadCount <= 0) {
                         usage(String.format("Invalid number of threads \"%s\"", args[i]));
                     }
@@ -321,14 +511,18 @@ public class JspC {
         }
         // locate the uriRoot using the first jsp if webroot not passed
         if (uriRoot == null) {
-            locateUriRootFromFirstPage(pages.get(0));
-            if (uriRoot == null) {
-                usage("The webapp path cannot be located using the first JSP file");
+            try {
+                locateUriRootFromFirstPage(pages.get(0));
+            } catch (JasperException e) {
+                usage(String.format("The webapp path cannot be located using the first JSP file \"%s\"", pages.get(0)));
             }
         }
-        // create the results if no error code passed
-        if (this.results == null) {
-            this.results = new JspCResults();
+        // check if we have jsp pages or load all the jsp files in the app
+        if (pages.isEmpty()) {
+            scanJspFilesinWebApp("/");
+            if (pages.isEmpty()) {
+                usage(String.format("No JSP pages in webapp \"%s\"", uriRoot));
+            }
         }
     }
 
@@ -345,7 +539,7 @@ public class JspC {
         }
     }
 
-    public void locateUriRootFromFirstPage(String jsp) {
+    public void locateUriRootFromFirstPage(String jsp) throws JasperException {
         if (uriBase == null) {
             uriBase = "/";
         }
@@ -367,45 +561,29 @@ public class JspC {
 
                 if (uriRoot != null) {
                     File froot = new File(uriRoot);
-                    uriRoot = froot.getCanonicalPath();
+                    setUriRoot(froot.getCanonicalPath());
                 }
             }
         } catch (IOException e) {
-            // Missing uriRoot will be handled in the caller.
+            throw new JasperException("Error locating utiroot from the first JSP ", e);
+        }
+        if (uriRoot == null) {
+            throw new JasperException("The webapp path cannot be located using the first JSP file");
         }
     }
 
-    // constructor
+    // constructors
 
-    public JspC(String... args) throws IOException, URISyntaxException, XMLStreamException, JasperException {
+    public JspC() throws IOException {
         ctx = new JspCServletContext();
         options = new JspCOptions(ctx);
+        this.setDebugLevel(Level.WARN);
+    }
+
+    public JspC(String... args) throws IOException {
+        this();
         // parse the arguments
         parseArgs(args);
-
-        // load into the classpath application libs and classes
-        loader = setupClassLoader();
-        // setup context with missing things
-        ctx.setUriRoot(uriRoot);
-        ctx.calculateJspConfigDescriptor();
-        ctx.setClassLoader(loader);
-        // check if we have jsp pages or load all the jsp files in the app
-        if (pages.isEmpty()) {
-            scanJspFilesinWebApp("/");
-            if (pages.isEmpty()) {
-                usage(String.format("No JSP pages in webapp \"%s\"", uriRoot));
-            }
-        }
-        log.debug("JSP to compile: " + pages);
-        // scan all possible TLD locations for taglibs and set them in the ctx for jastow
-        jspTagLibraries = ctx.getJspTagLibraries();
-        scanJspConfigForTlds();
-        scanWebInfPathForTlds("/WEB-INF/");
-        scanJarsForTlds();
-        log.trace("JSP taglibs that have been found: " + jspTagLibraries);
-        // finally setup the run
-        rctxt = new JspRuntimeContext(ctx, options);
-        config = new JspCServletConfig(ctx);
     }
 
     // methods to locate TLD inside jars and app
@@ -490,8 +668,21 @@ public class JspC {
     // the class loader from the app is added to normal class loader
 
     private ClassLoader setupClassLoader() throws IOException {
-        StringBuilder classpath = new StringBuilder(options.getClassPath()).append(File.pathSeparator);
+        String optionsClasspath = options.getClassPath();
+        StringBuilder classpath = new StringBuilder();
         List<URL> clUrls = new ArrayList<>();
+        if (optionsClasspath != null) {
+            String[] optionsClasspathArray = options.getClassPath().split(":");
+            Arrays.stream(optionsClasspathArray).filter(c -> c != null && !c.isEmpty())
+                    .forEach(c -> {
+                        try {
+                            classpath.append(c).append(File.pathSeparator);
+                            clUrls.add(new URL("file://" + c));
+                        } catch (MalformedURLException e) {
+                            log.warn(String.format("Error adding URL \"%s\" to the classpath", c), e);
+                        }
+                    });
+        }
         // add application jars and classes
         File webappBase = new File(uriRoot);
         if (webappBase.exists()) {
@@ -742,14 +933,51 @@ public class JspC {
         if (pagesIterator == null) {
             pagesIterator = pages.iterator();
         }
-        if (pagesIterator.hasNext() && !(failFast && results.isError())) {
+        if (pagesIterator.hasNext() && !(failFast && failOnError && results.isError())) {
             return pagesIterator.next();
         } else {
             return null;
         }
     }
 
-    public JspCResults execute() throws JasperException, IOException,ParserConfigurationException, SAXException, TransformerException {
+    private void prepareEnvironmentToCompile() throws JasperException, IOException, URISyntaxException, XMLStreamException {
+        // create the results if no error code passed
+        if (this.results == null) {
+            this.results = new JspCResults();
+        } else if (results.total() > 0) {
+            throw new JasperException("Already executed JspC instance");
+        }
+        // load into the classpath application libs and classes
+        loader = setupClassLoader();
+        // setup context with missing things
+        ctx.calculateJspConfigDescriptor();
+        ctx.setClassLoader(loader);
+        // scan all possible TLD locations for taglibs and set them in the ctx for jastow
+        jspTagLibraries = ctx.getJspTagLibraries();
+        scanJspConfigForTlds();
+        scanWebInfPathForTlds("/WEB-INF/");
+        scanJarsForTlds();
+        log.trace("JSP taglibs that have been found: " + jspTagLibraries);
+        // finally setup the runtime and config
+        rctxt = new JspRuntimeContext(ctx, options);
+        config = new JspCServletConfig(ctx);
+    }
+
+    public JspCResults execute() throws JasperException, IOException, ParserConfigurationException, SAXException, TransformerException, URISyntaxException, XMLStreamException {
+        // check everything is OK to start
+        if (uriRoot == null && pages.size() > 0) {
+            // locate uriRoot if not set/located yet
+            locateUriRootFromFirstPage(pages.get(0));
+        } else if (pages.isEmpty() && uriRoot != null) {
+            // check if we have jsp pages or load all the jsp files in the app
+            scanJspFilesinWebApp("/");
+        }
+        if (pages.isEmpty()) {
+            throw new JasperException("No JSP files passed or discovered for compilation");
+        }
+        // OK prepare and start
+        log.debug("JSP to compile: " + pages);
+        prepareEnvironmentToCompile();
         // execute the first JSP without threads because of the class name issue
         if (this.targetClassName != null) {
             compileJsp(this.nextJsp());
@@ -778,17 +1006,18 @@ public class JspC {
 
     public void compileJsp(String jsp) {
         log.trace("jsp=" + jsp);
-        // the jsp should be under uriRoot
-        File fjsp = new File(jsp);
-        String absPath = fjsp.getAbsolutePath();
         String jspUri = jsp;
-        if (absPath.startsWith(uriRoot)) {
-            // given JSP files directly the uriRoot should be removed
-            jspUri = absPath.substring(uriRoot.length());
-        }
         ClassLoader originalClassLoader = null;
         try {
+            // the jsp should be under uriRoot
+            File fjsp = new File(jsp);
+            String absPath = fjsp.getCanonicalPath();
+            if (absPath.startsWith(uriRoot)) {
+                // given JSP files directly the uriRoot should be removed
+                jspUri = absPath.substring(uriRoot.length());
+            }
             jspUri = jspUri.replace('\\', '/');
+            log.trace("final JSP to compile: " + jspUri);
             // generate the servlet compiler for jastow
             JspCServletWrapper jsw = new JspCServletWrapper(config, options, jspUri, rctxt);
             // assign the package name and class
@@ -824,10 +1053,6 @@ public class JspC {
     // main
 
     public static void main(String... args) throws Exception {
-        // TODO: using log4j because logmanager needs to be initialized at
-        //       startup using the "-Djava.util.logging.manager=org.jboss.logmanager.LogManager"
-        //       and that doesn't work inside the "exec-maven-plugin" easily
-        PropertyConfigurator.configure(Thread.currentThread().getContextClassLoader().getResource("log4j.properties"));
         JspC jspc = new JspC(args);
         JspCResults results = jspc.execute();
         System.out.println(String.format("Generation completed for [%d] files with [%d] errors in [%d] milliseconds",

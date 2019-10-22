@@ -52,7 +52,7 @@ public class JspCResults {
 
     private final List<ResultEntry> results;
     private final List<ResultEntry> errors;
-    private final int errorCode;
+    private int errorCode;
     private final long startTime;
 
     public JspCResults() {
@@ -96,6 +96,10 @@ public class JspCResults {
     
     public boolean isError() {
         return this.errors() > 0;
+    }
+
+    public void setErrorCode(int errorCode) {
+        this.errorCode = errorCode;
     }
 
     public int getErrorCode() {

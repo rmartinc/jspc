@@ -161,10 +161,7 @@ public class JspCOptions implements Options {
 
     @Override
     public String getClassPath() {
-        if (classPath != null) {
-            return classPath;
-        }
-        return System.getProperty("java.class.path");
+        return this.classPath;
     }
 
     public JspCOptions setClassPath(String classPath) {

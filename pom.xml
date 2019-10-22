@@ -8,6 +8,10 @@
     <version>1.0.0-SNAPSHOT</version>
     <name>jspc</name>
 
+    <properties>
+        <version.junit>4.12</version.junit>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>io.undertow.jastow</groupId>
@@ -54,6 +58,14 @@
             <artifactId>jsf-impl</artifactId>
             <version>${version.com.sun.faces.jsf-impl}</version>
             <optional>true</optional>
+        </dependency>
+
+        <!-- JUnit -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${version.junit}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
