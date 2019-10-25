@@ -241,4 +241,13 @@ public class CommanLineArgumentsTest {
             deleteTemporaryFile(webincFile);
         }
     }
+
+    @Test
+    public void testThreadCountPerProcessor() throws Exception {
+        JspC jspc = new JspCCommandLineBuilder()
+                .set(JspCCommandLineBuilder.JspCArgument.THREAD_COUNT, "2C")
+                .addFile("samples/simple.jsp")
+                .build();
+        Assert.assertEquals("threadCount option", Runtime.getRuntime().availableProcessors() * 2, jspc.getThreadCount());
+    }
 }

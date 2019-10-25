@@ -322,7 +322,17 @@ public class JspC {
 
     // parse methods
 
-    private String parseDirectory(String option, String file) throws IOException {
+    private String getArgumentIndex(String option, int idx, String[] args) {
+        if (idx < args.length) {
+            return args[idx];
+        } else {
+            usage(String.format("Option \"%s\" needs an argument", option));
+            return null;
+        }
+    }
+
+    private String parseDirectory(String option, int idx, String[] args) throws IOException {
+        String file = getArgumentIndex(option, idx, args);
         File dir = new File(file);
         if (!dir.isDirectory()) {
             usage(String.format("Invalid directory \"%s\" for option \"%s\"", file, option));
@@ -330,7 +340,8 @@ public class JspC {
         return dir.getCanonicalPath();
     }
 
-    private String parseWritableFile(String option, String file) throws IOException {
+    private String parseWritableFile(String option, int idx, String[] args) throws IOException {
+        String file = getArgumentIndex(option, idx, args);
         File f = new File(file);
         if (f.isDirectory() || (f.exists() && !f.canWrite())) {
             usage(String.format("Invalid writable file \"%s\" for option \"%s\"", file, option));
@@ -344,7 +355,8 @@ public class JspC {
         return f.getCanonicalPath();
     }
 
-    private Charset parseCharset(String option, String charset) {
+    private Charset parseCharset(String option, int idx, String[] args) {
+        String charset = getArgumentIndex(option, idx, args);
         try {
             return Charset.forName(charset);
         } catch (Exception e) {
@@ -353,9 +365,19 @@ public class JspC {
         }
     }
 
-    private int parseInteger(String option, String number) {
+    private int parseInteger(String option, int idx, String[] args) {
+        String number = getArgumentIndex(option, idx, args);
         try {
             return Integer.parseInt(number);
+        } catch (NumberFormatException e) {
+            usage(String.format("Invalid number \"%s\" for option \"%s\"", number, option));
+            return -1;
+        }
+    }
+
+    private double parseDouble(String option, String number) {
+        try {
+            return Double.parseDouble(number);
         } catch (NumberFormatException e) {
             usage(String.format("Invalid number \"%s\" for option \"%s\"", number, option));
             return -1;
@@ -376,13 +398,13 @@ public class JspC {
             switch(args[i]) {
                 case "-webapp":
                 case "-uriroot":
-                    this.setUriRoot(parseDirectory(args[i], args[++i]));
+                    this.setUriRoot(parseDirectory(args[i], ++i, args));
                     break;
                 case "-help":
                     usage(null);
                     break;
                 case "-d":
-                    String outputDir = parseDirectory(args[i], args[++i]);
+                    String outputDir = parseDirectory(args[i], ++i, args);
                     this.setOutputDir(outputDir);
                     break;
                 case "-vv":
@@ -398,23 +420,23 @@ public class JspC {
                     setDebugLevelIfNecessary(Level.WARN);
                     break;
                 case "-p":
-                    setTargetPackage(args[++i]);
+                    setTargetPackage(getArgumentIndex(args[i], ++i, args));
                     break;
                 case "-c":
-                    setTargetClassName(args[++i]);
+                    setTargetClassName(getArgumentIndex(args[i], ++i, args));
                     break;
                 case "-mapped":
                     setMappedFile(true);
                     break;
                 case "-die":
-                    int errorCode = parseInteger(args[i], args[++i]);
+                    int errorCode = parseInteger(args[i], ++i, args);
                     if (errorCode <= 0) {
                         usage(String.format("Invalid number \"%d\" code for option \"die\"", errorCode));
                     }
                     setDieLevel(errorCode);
                     break;
                 case "-uribase":
-                    setUriBase(args[++i]);
+                    setUriBase(getArgumentIndex(args[i], ++i, args));
                     break;
                 // "compile" flag has no sense because we always do this
                 // the JSP is compiled and if exists it is checked for changes
@@ -431,21 +453,21 @@ public class JspC {
                     if (webxmlLevel != null) {
                         usage(String.format("Invalid -webinc option because the output was previously set to \"%s\"", webxmlLevel.name()));
                     }
-                    setWebxmlFile(parseWritableFile(args[i], args[++i]));
+                    setWebxmlFile(parseWritableFile(args[i], ++i, args));
                     setWebxmlLevel(WEBXML_LEVEL.INC_WEBXML);
                     break;
                 case "-webfrg":
                     if (webxmlLevel != null) {
                         usage(String.format("Invalid -webfrg option because the output was previously set to \"%s\"", webxmlLevel.name()));
                     }
-                    setWebxmlFile(parseWritableFile(args[i], args[++i]));
+                    setWebxmlFile(parseWritableFile(args[i], ++i, args));
                     setWebxmlLevel(WEBXML_LEVEL.FRG_WEBXML);
                     break;
                 case "-webxml":
                     if (webxmlLevel != null) {
                         usage(String.format("Invalid -webxml option because the output was previously set to \"%s\"", webxmlLevel.name()));
                     }
-                    setWebxmlFile(parseWritableFile(args[i], args[++i]));
+                    setWebxmlFile(parseWritableFile(args[i], ++i, args));
                     setWebxmlLevel(WEBXML_LEVEL.ALL_WEBXML);
                     break;
                 case "-addwebxmlmappings":
@@ -455,13 +477,13 @@ public class JspC {
                     setWebxmlLevel(WEBXML_LEVEL.MERGE_WEBXML);
                     break;
                 case "-webxmlencoding":
-                    setWebxmlEncoding(parseCharset(args[i], args[++i]));
+                    setWebxmlEncoding(parseCharset(args[i], ++i, args));
                     break;
                 case "-ieplugin":
-                    setIeClassId(args[++i]);
+                    setIeClassId(getArgumentIndex(args[i], ++i, args));
                     break;
                 case "-classpath":
-                    setClassPath(args[++i]);
+                    setClassPath(getArgumentIndex(args[i], ++i, args));
                     break;
                 case "-xpoweredBy":
                     setXpoweredBy(true);
@@ -470,16 +492,23 @@ public class JspC {
                     setTrimSpaces(true);
                     break;
                 case "-javaEncoding":
-                    setJavaEncoding(args[++i]);
+                    setJavaEncoding(getArgumentIndex(args[i], ++i, args));
                     break;
                 case "-source":
-                    setCompilerSourceVM(args[++i]);
+                    setCompilerSourceVM(getArgumentIndex(args[i], ++i, args));
                     break;
                 case "-target":
-                    setCompilerTargetVM(args[++i]);
+                    setCompilerTargetVM(getArgumentIndex(args[i], ++i, args));
                     break;
                 case "-threadCount":
-                    setThreadCount(parseInteger(args[i], args[++i]));
+                    String option = getArgumentIndex(args[i], i+1, args);
+                    if (option.endsWith("C")) {
+                        setThreadCount((int) (parseDouble("-threadCount", option.substring(0, option.length() - 1))
+                                * Runtime.getRuntime().availableProcessors()));
+                        i++;
+                    } else {
+                        setThreadCount(parseInteger(args[i], ++i, args));
+                    }
                     if (threadCount <= 0) {
                         usage(String.format("Invalid number of threads \"%s\"", args[i]));
                     }
