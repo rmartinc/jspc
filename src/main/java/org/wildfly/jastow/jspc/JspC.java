@@ -31,8 +31,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -779,7 +781,7 @@ public class JspC {
         // TODO: at least split the method in several parts and create a backup of the web.xml
         String nl = System.getProperty("line.separator");
         File webXml = new File(this.uriRoot, "/WEB-INF/web.xml");
-        Set<String> stopElements = new HashSet(Arrays.asList(new String[]{"servlet-mapping", "session-config>",
+        Set<String> stopElements = new HashSet(Arrays.asList(new String[]{"servlet-mapping", "session-config",
             "mime-mapping", "welcome-file-list", "error-page", "taglib", "resource-env-ref",
             "resource-ref", "security-constraint", "login-config", "security-role", "env-entry",
             "ejb-ref", "ejb-local-ref"}));
@@ -857,12 +859,16 @@ public class JspC {
                 doc.getDocumentElement().appendChild(doc.createComment("End of web include"));
                 doc.getDocumentElement().appendChild(doc.createTextNode(nl + nl + "    "));
             }
-            // write the contents
+            // move the current file to a backup just in case
+            String fileName = webXml.getAbsolutePath();
+            File backup = new File(fileName + ".jspc-" + new SimpleDateFormat("YYYYMMddHHmmss").format(new Date()));
+            webXml.renameTo(backup);
+            // write the contents to web.xml
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             transformer.setOutputProperty(OutputKeys.ENCODING, webxmlEncoding.name());
             DOMSource source = new DOMSource(doc);
-            StreamResult result = new StreamResult(webXml);
+            StreamResult result = new StreamResult(fileName);
             transformer.transform(source, result);
         }
     }

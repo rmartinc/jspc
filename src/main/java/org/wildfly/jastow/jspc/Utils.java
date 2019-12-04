@@ -63,16 +63,23 @@ import org.xml.sax.SAXException;
  */
 public class Utils {
 
-    private static final XMLInputFactory factory = XMLInputFactory.newInstance();
-
     public static Document readXmlIntoDocument(File f) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        docFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        docFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        docFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        docFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        docFactory.setXIncludeAware(false);
+        docFactory.setExpandEntityReferences(false);
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
         return docBuilder.parse(f);
     }
 
     public static void parseTldFile(String location, InputStream is, HashMap<String, TagLibraryInfo> jspTagLibraries) throws XMLStreamException {
         try {
+            XMLInputFactory factory = XMLInputFactory.newInstance();
+            factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+            factory.setProperty("javax.xml.stream.isSupportingExternalEntities", false);
             XMLStreamReader xmlReader = factory.createXMLStreamReader(is);
             TldMetaData tldMetaData = TldMetaDataParser.parse(xmlReader);
             Utils.createTldInfo(location, tldMetaData, jspTagLibraries);
