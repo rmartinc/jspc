@@ -4,13 +4,13 @@ This is a clone of the tomcat JspC tool for pre-compiling JSPs (almost all the o
 
 ## How to build it
 
-It is a maven project so just install or package it.
+It is a maven project so just install or package it. Maven and JDK should be present in the system.
 
 ```
 mvn clean package
 ```
 
-## Hot to use it
+## How to use it
 
 For the moment the tool should be used using the [exec-maven-plugin](https://www.mojohaus.org/exec-maven-plugin/). So the options should be passed using the `exec.args` system property of the exec plugin. For example, assuming the WAR exploded application is inside the directory `/path/to/webapp`, the following commands creates a `precompiled-jsp.jar` library with all the compiled classes in it:
 
@@ -21,11 +21,13 @@ cd /precompiled/classes/
 jar cvf precompiled-jsp.jar *
 ```
 
-The previous example searches all the JSP files inside the webapp application directory and compiles them inside the specified directory (specific JSP files can also passed to the tool). The option `-webfrg` creates a web fragment standard in the `META-INF` directory that is automatically parsed by wildfly (by spec).Just adding the JAR file inside the `WEB-INF/lib` of the app will avoid pre-compilation (the pre-compiled class will be used instead). The complete usage for the utiltity can be shown just using the `-help` option:
+The previous example searches all the JSP files inside the webapp application directory and compiles them inside the specified directory (specific JSP files can also passed to the tool). The option `-webfrg` creates a web fragment standard in the `META-INF` directory that is automatically parsed by wildfly (by spec). Just adding the JAR file inside the `WEB-INF/lib` of the app will avoid pre-compilation (the pre-compiled class will be used instead). The complete usage for the utiltity can be shown just using the `-help` option:
 
 ```
 mvn exec:java -Dexec.args="-help"
 ```
+
+If the application uses global libraries (wildfly modules, JARs inside an EAR file,...) that are not present in the WAR itself they can be provided to the tool using the `-classpath` option.
 
 As comented before the implementation tries to follow the same syntax than the tomcat counterpart.
 

@@ -22,7 +22,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.JarURLConnection;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -714,13 +713,18 @@ public class JspC {
         StringBuilder classpath = new StringBuilder();
         List<URL> clUrls = new ArrayList<>();
         if (optionsClasspath != null) {
-            String[] optionsClasspathArray = options.getClassPath().split(":");
+            String[] optionsClasspathArray = options.getClassPath().split(File.pathSeparator);
             Arrays.stream(optionsClasspathArray).filter(c -> c != null && !c.isEmpty())
                     .forEach(c -> {
                         try {
                             classpath.append(c).append(File.pathSeparator);
-                            clUrls.add(new URL("file://" + c));
-                        } catch (MalformedURLException e) {
+                            File libFile = new File(c);
+                            if (libFile.exists()) {
+                                clUrls.add(libFile.getCanonicalFile().toURI().toURL());
+                            } else {
+                                log.warn("Invalid classpath entry: " + c);
+                            }
+                        } catch (IOException e) {
                             log.warn(String.format("Error adding URL \"%s\" to the classpath", c), e);
                         }
                     });
@@ -743,7 +747,7 @@ public class JspC {
                         if (lib1.endsWith(".jar")) {
                             File libFile = new File(lib, lib1);
                             classpath.append(libFile.getCanonicalPath()).append(File.pathSeparator);
-                            clUrls.add(libFile.getAbsoluteFile().toURI().toURL());
+                            clUrls.add(libFile.getCanonicalFile().toURI().toURL());
                         }
                     }
                 }

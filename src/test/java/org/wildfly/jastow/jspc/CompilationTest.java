@@ -149,6 +149,43 @@ public class CompilationTest {
     }
 
     @Test
+    public void testExternalLibrary() throws Exception {
+        Assert.assertTrue("Library moved", new File("samples/WEB-INF/lib/inner-lib.jar")
+                .renameTo(new File("samples/WEB-INF/lib/inner-lib.jar.NO")));
+        try {
+            // it should fail because TLD and classes are not found
+            JspCResults results = new JspC()
+                    .setDebugLevel(Level.OFF)
+                    .setOutputDir(tempDir)
+                    .setWebxmlLevel(JspC.WEBXML_LEVEL.INC_WEBXML)
+                    .setWebxmlFile(tempDir + "/web-inc.xml")
+                    .addPage("samples/tld-in-jar-resources.jsp")
+                    .execute();
+            Assert.assertTrue("Error result", results.isError());
+            Assert.assertEquals("Errors = 1", 1, results.errors());
+            Assert.assertFalse("web-inc.xml doesn't exist", Files.exists(Paths.get(tempDir + "/web-inc.xml")));
+            // append the classpath (twice to check the separator)
+            results = new JspC()
+                    .setDebugLevel(Level.OFF)
+                    .setOutputDir(tempDir)
+                    .setWebxmlLevel(JspC.WEBXML_LEVEL.INC_WEBXML)
+                    .setWebxmlFile(tempDir + "/web-inc.xml")
+                    .setClassPath("samples/WEB-INF/lib/inner-lib.jar.NO" + File.pathSeparator + "samples/WEB-INF/lib/inner-lib.jar.NO")
+                    .addPage("samples/tld-in-jar-resources.jsp")
+                    .execute();
+            Assert.assertFalse("No error", results.isError());
+            Assert.assertEquals("Errors = 0", 0, results.errors());
+            Assert.assertEquals("Results = 1", 1, results.results());
+            Assert.assertEquals("Total = 1", 1, results.total());
+            Assert.assertTrue("web-inc.xml file exists", Files.exists(Paths.get(tempDir + "/web-inc.xml")));
+            Assert.assertTrue("web-inc.xml is not empty", Files.size(Paths.get(tempDir + "/web-inc.xml")) > 0);
+        } finally {
+            new File("samples/WEB-INF/lib/inner-lib.jar.NO")
+                    .renameTo(new File("samples/WEB-INF/lib/inner-lib.jar"));
+        }
+    }
+
+    @Test
     public void testCompilationAll() throws Exception {
         JspCResults results = new JspC()
                 .setDebugLevel(Level.OFF)
@@ -161,7 +198,7 @@ public class CompilationTest {
         Assert.assertEquals("No error", 0, results.errors());
         Assert.assertEquals("No error", 17, results.total());
         Assert.assertEquals("No error", 17, results.results());
-        Assert.assertTrue("web-fragment.xml files exists", Files.exists(Paths.get(tempDir + "/web-fragment.xml")));
+        Assert.assertTrue("web-fragment.xml file exists", Files.exists(Paths.get(tempDir + "/web-fragment.xml")));
         Assert.assertTrue("web-fragment.xml is not empty", Files.size(Paths.get(tempDir + "/web-fragment.xml")) > 0);
     }
 
