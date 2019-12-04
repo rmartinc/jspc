@@ -226,7 +226,7 @@ public class JspCServletContext implements ServletContext {
         if (!path.startsWith("/")) {
             throw new MalformedURLException(String.format("File should start with /. Invalid file: %s", path));
         }
-        URL url = new URL("file://" + uriRoot.getAbsolutePath() + path);
+        URL url = new URL(uriRoot.getAbsoluteFile().toURI().toURL(), path.substring(1));
         try (InputStream is = url.openStream()) {
             return url;
         } catch (IOException e) {

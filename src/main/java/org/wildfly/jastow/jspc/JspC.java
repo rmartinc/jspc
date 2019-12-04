@@ -573,7 +573,7 @@ public class JspC {
         for (String path : paths) {
             if (path.endsWith("/")) {
                 scanJspFilesinWebApp(path);
-            } else if (path.endsWith(".jsp") || path.endsWith("jspx")) {
+            } else if (path.endsWith(".jsp") || path.endsWith(".jspx")) {
                 pages.add(path);
             }
         }
@@ -644,8 +644,8 @@ public class JspC {
         }
     }
 
-    private void scanFilePath(URL url, HashMap<String, TagLibraryInfo> jspTagLibraries) throws IOException {
-        try (Stream<Path> paths = Files.walk(Paths.get(url.getPath()), 2)) {
+    private void scanFilePath(URL url, HashMap<String, TagLibraryInfo> jspTagLibraries) throws IOException, URISyntaxException {
+        try (Stream<Path> paths = Files.walk(Paths.get(url.toURI()), 2)) {
             paths.filter(path -> path.endsWith(".tld"))
                     .forEach(path -> {
                         try {
