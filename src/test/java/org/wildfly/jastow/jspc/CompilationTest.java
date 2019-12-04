@@ -18,6 +18,7 @@ package org.wildfly.jastow.jspc;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -150,8 +151,9 @@ public class CompilationTest {
 
     @Test
     public void testExternalLibrary() throws Exception {
-        Assert.assertTrue("Library moved", new File("samples/WEB-INF/lib/inner-lib.jar")
-                .renameTo(new File("samples/WEB-INF/lib/inner-lib.jar.NO")));
+        File libFile = Paths.get("samples/WEB-INF/lib/inner-lib.jar").toFile();
+        File noLibFile = new File(libFile.getAbsolutePath() + ".NO");
+        Assert.assertTrue("Library moved", libFile.renameTo(noLibFile));
         try {
             // it should fail because TLD and classes are not found
             JspCResults results = new JspC()
@@ -170,7 +172,7 @@ public class CompilationTest {
                     .setOutputDir(tempDir)
                     .setWebxmlLevel(JspC.WEBXML_LEVEL.INC_WEBXML)
                     .setWebxmlFile(tempDir + "/web-inc.xml")
-                    .setClassPath("samples/WEB-INF/lib/inner-lib.jar.NO" + File.pathSeparator + "samples/WEB-INF/lib/inner-lib.jar.NO")
+                    .setClassPath(noLibFile.getAbsolutePath() + File.pathSeparator + noLibFile.getAbsolutePath())
                     .addPage("samples/tld-in-jar-resources.jsp")
                     .execute();
             Assert.assertFalse("No error", results.isError());
@@ -180,8 +182,7 @@ public class CompilationTest {
             Assert.assertTrue("web-inc.xml file exists", Files.exists(Paths.get(tempDir + "/web-inc.xml")));
             Assert.assertTrue("web-inc.xml is not empty", Files.size(Paths.get(tempDir + "/web-inc.xml")) > 0);
         } finally {
-            new File("samples/WEB-INF/lib/inner-lib.jar.NO")
-                    .renameTo(new File("samples/WEB-INF/lib/inner-lib.jar"));
+            noLibFile.renameTo(libFile);
         }
     }
 
