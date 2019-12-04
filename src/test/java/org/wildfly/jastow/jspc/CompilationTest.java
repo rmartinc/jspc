@@ -26,6 +26,7 @@ import java.util.Comparator;
 import org.apache.log4j.Level;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -151,39 +152,33 @@ public class CompilationTest {
 
     @Test
     public void testExternalLibrary() throws Exception {
-        File libFile = Paths.get("samples/WEB-INF/lib/inner-lib.jar").toFile();
-        File noLibFile = new File(libFile.getAbsolutePath() + ".NO");
-        Assert.assertTrue("Library moved", libFile.renameTo(noLibFile));
-        try {
-            // it should fail because TLD and classes are not found
-            JspCResults results = new JspC()
-                    .setDebugLevel(Level.OFF)
-                    .setOutputDir(tempDir)
-                    .setWebxmlLevel(JspC.WEBXML_LEVEL.INC_WEBXML)
-                    .setWebxmlFile(tempDir + "/web-inc.xml")
-                    .addPage("samples/tld-in-jar-resources.jsp")
-                    .execute();
-            Assert.assertTrue("Error result", results.isError());
-            Assert.assertEquals("Errors = 1", 1, results.errors());
-            Assert.assertFalse("web-inc.xml doesn't exist", Files.exists(Paths.get(tempDir + "/web-inc.xml")));
-            // append the classpath (twice to check the separator)
-            results = new JspC()
-                    .setDebugLevel(Level.OFF)
-                    .setOutputDir(tempDir)
-                    .setWebxmlLevel(JspC.WEBXML_LEVEL.INC_WEBXML)
-                    .setWebxmlFile(tempDir + "/web-inc.xml")
-                    .setClassPath(noLibFile.getAbsolutePath() + File.pathSeparator + noLibFile.getAbsolutePath())
-                    .addPage("samples/tld-in-jar-resources.jsp")
-                    .execute();
-            Assert.assertFalse("No error", results.isError());
-            Assert.assertEquals("Errors = 0", 0, results.errors());
-            Assert.assertEquals("Results = 1", 1, results.results());
-            Assert.assertEquals("Total = 1", 1, results.total());
-            Assert.assertTrue("web-inc.xml file exists", Files.exists(Paths.get(tempDir + "/web-inc.xml")));
-            Assert.assertTrue("web-inc.xml is not empty", Files.size(Paths.get(tempDir + "/web-inc.xml")) > 0);
-        } finally {
-            noLibFile.renameTo(libFile);
-        }
+        // it should fail because TLD and classes are not found
+        JspCResults results = new JspC()
+                .setDebugLevel(Level.OFF)
+                .setOutputDir(tempDir)
+                .setWebxmlLevel(JspC.WEBXML_LEVEL.INC_WEBXML)
+                .setWebxmlFile(tempDir + "/web-inc.xml")
+                .addPage("samples/beginnersbook-details-extlib.jsp.no")
+                .execute();
+        Assert.assertTrue("Error result", results.isError());
+        Assert.assertEquals("Errors = 1", 1, results.errors());
+        Assert.assertFalse("web-inc.xml doesn't exist", Files.exists(Paths.get(tempDir + "/web-inc.xml")));
+        // append the classpath (twice to check the separator)
+        String extLib = Paths.get("samples/beginnersbook-details-extlib.jar").toAbsolutePath().toString();
+        results = new JspC()
+                .setDebugLevel(Level.OFF)
+                .setOutputDir(tempDir)
+                .setWebxmlLevel(JspC.WEBXML_LEVEL.INC_WEBXML)
+                .setWebxmlFile(tempDir + "/web-inc.xml")
+                .setClassPath(extLib + File.pathSeparator + extLib)
+                .addPage("samples/beginnersbook-details-extlib.jsp.no")
+                .execute();
+        Assert.assertFalse("No error", results.isError());
+        Assert.assertEquals("Errors = 0", 0, results.errors());
+        Assert.assertEquals("Results = 1", 1, results.results());
+        Assert.assertEquals("Total = 1", 1, results.total());
+        Assert.assertTrue("web-inc.xml file exists", Files.exists(Paths.get(tempDir + "/web-inc.xml")));
+        Assert.assertTrue("web-inc.xml is not empty", Files.size(Paths.get(tempDir + "/web-inc.xml")) > 0);
     }
 
     @Test

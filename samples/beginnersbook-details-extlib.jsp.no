@@ -1,0 +1,9 @@
+<%@ taglib prefix="myprefix" uri="http://beginnersbook.com/Details"%>
+<html>
+ <head>
+    <title>Custom Tags in JSP Example</title>
+ </head>
+ <body>
+    <myprefix:MyMsg/>
+ </body>
+</html>
