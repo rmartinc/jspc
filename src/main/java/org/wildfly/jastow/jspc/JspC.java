@@ -778,8 +778,7 @@ public class JspC {
 
     private void mergeIntoWebXml() throws IOException, ParserConfigurationException, SAXException, TransformerException {
         // TODO: maybe we can do this better, but for the moment I have only this
-        // TODO: at least split the method in several parts and create a backup of the web.xml
-        String nl = System.getProperty("line.separator");
+        // TODO: maybe split the method in several parts
         File webXml = new File(this.uriRoot, "/WEB-INF/web.xml");
         Set<String> stopElements = new HashSet(Arrays.asList(new String[]{"servlet-mapping", "session-config",
             "mime-mapping", "welcome-file-list", "error-page", "taglib", "resource-env-ref",
@@ -806,13 +805,13 @@ public class JspC {
             }
             // append all the generated data before the selected node
             if (selectedNode != null) {
-                doc.getDocumentElement().insertBefore(doc.createTextNode(nl + nl + "    "), selectedNode);
+                doc.getDocumentElement().insertBefore(doc.createTextNode("\n\n    "), selectedNode);
                 doc.getDocumentElement().insertBefore(doc.createComment("Automatically generated web include"), selectedNode);
-                doc.getDocumentElement().insertBefore(doc.createTextNode(nl + "    "), selectedNode);
+                doc.getDocumentElement().insertBefore(doc.createTextNode("\n    "), selectedNode);
             } else {
-                doc.getDocumentElement().appendChild(doc.createTextNode(nl + nl + "    "));
+                doc.getDocumentElement().appendChild(doc.createTextNode("\n\n    "));
                 doc.getDocumentElement().appendChild(doc.createComment("Automatically generated web include"));
-                doc.getDocumentElement().appendChild(doc.createTextNode(nl + "    "));
+                doc.getDocumentElement().appendChild(doc.createTextNode("\n    "));
             }
             for (JspCResults.ResultEntry entry : results.getResults()) {
                 Element servlet = doc.createElement("servlet");
@@ -820,17 +819,17 @@ public class JspC {
                 servletName.setTextContent(entry.getServletName());
                 Element servletClass = doc.createElement("servlet-class");
                 servletClass.setTextContent(entry.getServletName());
-                servlet.appendChild(doc.createTextNode(nl + "        "));
+                servlet.appendChild(doc.createTextNode("\n        "));
                 servlet.appendChild(servletName);
-                servlet.appendChild(doc.createTextNode(nl + "        "));
+                servlet.appendChild(doc.createTextNode("\n        "));
                 servlet.appendChild(servletClass);
-                servlet.appendChild(doc.createTextNode(nl + "    "));
+                servlet.appendChild(doc.createTextNode("\n    "));
                 if (selectedNode != null) {
                     doc.getDocumentElement().insertBefore(servlet, selectedNode);
-                    doc.getDocumentElement().insertBefore(doc.createTextNode(nl + "    "), selectedNode);
+                    doc.getDocumentElement().insertBefore(doc.createTextNode("\n    "), selectedNode);
                 } else {
                     doc.getDocumentElement().appendChild(servlet);
-                    doc.getDocumentElement().appendChild(doc.createTextNode(nl + "    "));
+                    doc.getDocumentElement().appendChild(doc.createTextNode("\n    "));
                 }
             }
             for (JspCResults.ResultEntry entry : results.getResults()) {
@@ -839,25 +838,25 @@ public class JspC {
                 servletName.setTextContent(entry.getServletName());
                 Element urlPattern = doc.createElement("url-pattern");
                 urlPattern.setTextContent(entry.getJspUri());
-                servletMapping.appendChild(doc.createTextNode(nl + "        "));
+                servletMapping.appendChild(doc.createTextNode("\n        "));
                 servletMapping.appendChild(servletName);
-                servletMapping.appendChild(doc.createTextNode(nl + "        "));
+                servletMapping.appendChild(doc.createTextNode("\n        "));
                 servletMapping.appendChild(urlPattern);
-                servletMapping.appendChild(doc.createTextNode(nl + "    "));
+                servletMapping.appendChild(doc.createTextNode("\n    "));
                 if (selectedNode != null) {
                     doc.getDocumentElement().insertBefore(servletMapping, selectedNode);
-                    doc.getDocumentElement().insertBefore(doc.createTextNode(nl + "    "), selectedNode);
+                    doc.getDocumentElement().insertBefore(doc.createTextNode("\n    "), selectedNode);
                 } else {
                     doc.getDocumentElement().appendChild(servletMapping);
-                    doc.getDocumentElement().appendChild(doc.createTextNode(nl + "    "));
+                    doc.getDocumentElement().appendChild(doc.createTextNode("\n    "));
                 }
             }
             if (selectedNode != null) {
                 doc.getDocumentElement().insertBefore(doc.createComment("End of web include"), selectedNode);
-                doc.getDocumentElement().insertBefore(doc.createTextNode(nl + nl + "    "), selectedNode);
+                doc.getDocumentElement().insertBefore(doc.createTextNode("\n\n    "), selectedNode);
             } else {
                 doc.getDocumentElement().appendChild(doc.createComment("End of web include"));
-                doc.getDocumentElement().appendChild(doc.createTextNode(nl + nl + "    "));
+                doc.getDocumentElement().appendChild(doc.createTextNode("\n\n    "));
             }
             // move the current file to a backup just in case
             String fileName = webXml.getAbsolutePath();
