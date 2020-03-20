@@ -1032,7 +1032,7 @@ public class JspC {
             compileJsp(this.nextJsp());
         }
         // create the threads and execute them
-        log.debug(String.format("Compilation will be executd with %d threads", threadCount));
+        log.debug(String.format("Compilation will be executed with %d threads", threadCount));
         CompilerThread[] compilers = new CompilerThread[threadCount];
         for (int i = 0; i < threadCount; i++) {
             compilers[i] = new CompilerThread(this);
