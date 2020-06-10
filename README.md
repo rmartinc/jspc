@@ -33,7 +33,7 @@ As comented before the implementation tries to follow the same syntax than the t
 
 ## What wildfly versions are supposed to work
 
-The utility has been done and tested with wildfly 18. Under the hood the maven project is configured to use the needed library versions that are present in that version (jastow, metadata, servlet spec, jstl and jsf modules). The idea is the `pom.xml` can have different wildfly (and EAP) profiles to work with different versions. Currently only two profiles have been added: `wildfly18` and `eap72` (`wildfly18` is the default one). In order to add a new version of wildfly a new profile should be added with the versions used in that specific release.
+The utility has been done and tested with wildfly. Under the hood the maven project is configured to use the needed library versions that are present in the exact version used (jastow, metadata, servlet spec, jstl and jsf modules). The idea is the `pom.xml` can have different wildfly (and EAP) profiles to work with different versions. Currently several profiles have been added for wildfly and eap (the default one will point to the last wildfly version tested).
 
 For example the `wildfly18` profile is defined like this:
 
