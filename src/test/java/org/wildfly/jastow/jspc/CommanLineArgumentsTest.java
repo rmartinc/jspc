@@ -24,19 +24,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
 import org.apache.log4j.Level;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 /**
  *
  * @author rmartinc
  */
 public class CommanLineArgumentsTest {
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
 
     private static void deleteTemporaryDir(String path) {
         try {
@@ -60,65 +57,65 @@ public class CommanLineArgumentsTest {
 
     @Test
     public void testInvalidWebappDirectory() throws Exception {
-        thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("ERROR: Invalid directory");
-        new JspCCommandLineBuilder()
-                .set(JspCCommandLineBuilder.JspCArgument.WEBAPP, "invalid-directory")
-                .build();
+        IllegalArgumentException e = Assert.assertThrows(IllegalArgumentException.class,
+                () -> new JspCCommandLineBuilder()
+                        .set(JspCCommandLineBuilder.JspCArgument.WEBAPP, "invalid-directory")
+                        .build());
+        MatcherAssert.assertThat(e.getMessage(), CoreMatchers.containsString("ERROR: Invalid directory"));
     }
 
     @Test
     public void testInvalidOuputDirectory() throws Exception {
-        thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("ERROR: Invalid directory");
-        new JspCCommandLineBuilder()
-                .set(JspCCommandLineBuilder.JspCArgument.OUTPUT_DIR, "invalid-directory")
-                .build();
+        IllegalArgumentException e = Assert.assertThrows(IllegalArgumentException.class,
+                () -> new JspCCommandLineBuilder()
+                        .set(JspCCommandLineBuilder.JspCArgument.OUTPUT_DIR, "invalid-directory")
+                        .build());
+        MatcherAssert.assertThat(e.getMessage(), CoreMatchers.containsString("ERROR: Invalid directory"));
     }
 
     @Test
     public void testInvalidErrorCodeNoNumber() throws Exception {
-        thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("ERROR: Invalid number");
-        new JspCCommandLineBuilder()
-                .set(JspCCommandLineBuilder.JspCArgument.DIE, "no-number")
-                .build();
+        IllegalArgumentException e = Assert.assertThrows(IllegalArgumentException.class,
+                () -> new JspCCommandLineBuilder()
+                        .set(JspCCommandLineBuilder.JspCArgument.DIE, "no-number")
+                        .build());
+        MatcherAssert.assertThat(e.getMessage(), CoreMatchers.containsString("ERROR: Invalid number"));
     }
 
     @Test
     public void testInvalidErrorCode() throws Exception {
-        thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("ERROR: Invalid number");
-        new JspCCommandLineBuilder()
-                .set(JspCCommandLineBuilder.JspCArgument.DIE, "-1")
-                .build();
+        IllegalArgumentException e = Assert.assertThrows(IllegalArgumentException.class,
+                () -> new JspCCommandLineBuilder()
+                        .set(JspCCommandLineBuilder.JspCArgument.DIE, "-1")
+                        .build());
+        MatcherAssert.assertThat(e.getMessage(), CoreMatchers.containsString("ERROR: Invalid number"));
     }
 
     @Test
     public void testInvalidWebfrgFile() throws Exception {
-        thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("ERROR: Invalid writable file");
-        new JspCCommandLineBuilder()
-                .set(JspCCommandLineBuilder.JspCArgument.WEB_FRG, "invalid-dir/invalid-file")
-                .build();
+        IllegalArgumentException e = Assert.assertThrows(IllegalArgumentException.class,
+                () -> new JspCCommandLineBuilder()
+                        .set(JspCCommandLineBuilder.JspCArgument.WEB_FRG, "invalid-dir/invalid-file")
+                        .build());
+        MatcherAssert.assertThat(e.getMessage(), CoreMatchers.containsString("ERROR: Invalid writable file"));
     }
 
     @Test
     public void testInvalidWebincFile() throws Exception {
-        thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("ERROR: Invalid writable file");
-        new JspCCommandLineBuilder()
-                .set(JspCCommandLineBuilder.JspCArgument.WEB_INC, "invalid-dir/invalid-file")
-                .build();
+        IllegalArgumentException e = Assert.assertThrows(IllegalArgumentException.class,
+                () -> new JspCCommandLineBuilder()
+                        .set(JspCCommandLineBuilder.JspCArgument.WEB_INC, "invalid-dir/invalid-file")
+                        .build());
+        MatcherAssert.assertThat(e.getMessage(), CoreMatchers.containsString("ERROR: Invalid writable file"));
     }
 
     @Test
     public void testInvalidWebxmlFile() throws Exception {
-        thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("ERROR: Invalid writable file");
-        new JspCCommandLineBuilder()
-                .set(JspCCommandLineBuilder.JspCArgument.WEB_XML, "invalid-dir/invalid-file")
-                .build();
+        IllegalArgumentException e = Assert.assertThrows(IllegalArgumentException.class,
+                () -> new JspCCommandLineBuilder()
+                        .set(JspCCommandLineBuilder.JspCArgument.WEB_XML, "invalid-dir/invalid-file")
+                        .build());
+        MatcherAssert.assertThat(e.getMessage(), CoreMatchers.containsString("ERROR: Invalid writable file"));
     }
 
     @Test
@@ -126,12 +123,12 @@ public class CommanLineArgumentsTest {
         String webinc = Files.createTempFile("webinc", ".xml").toFile().getCanonicalFile().getAbsolutePath();
         String webfrg = Files.createTempFile("webfrg", ".xml").toFile().getCanonicalFile().getAbsolutePath();
         try {
-            thrown.expect(IllegalArgumentException.class);
-            thrown.expectMessage("because the output was previously set to");
-            new JspCCommandLineBuilder()
-                    .set(JspCCommandLineBuilder.JspCArgument.WEB_INC, webinc)
-                    .set(JspCCommandLineBuilder.JspCArgument.WEB_FRG, webfrg)
-                    .build();
+            IllegalArgumentException e = Assert.assertThrows(IllegalArgumentException.class,
+                    () -> new JspCCommandLineBuilder()
+                            .set(JspCCommandLineBuilder.JspCArgument.WEB_INC, webinc)
+                            .set(JspCCommandLineBuilder.JspCArgument.WEB_FRG, webfrg)
+                            .build());
+            MatcherAssert.assertThat(e.getMessage(), CoreMatchers.containsString("because the output was previously set to"));
         } finally {
             deleteTemporaryFile(webfrg);
             deleteTemporaryFile(webinc);
@@ -140,37 +137,37 @@ public class CommanLineArgumentsTest {
 
     @Test
     public void testInvalidThreadCount() throws Exception {
-        thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("ERROR: Invalid number");
-        new JspCCommandLineBuilder()
-                .set(JspCCommandLineBuilder.JspCArgument.THREAD_COUNT, "no-number")
-                .build();
+        IllegalArgumentException e = Assert.assertThrows(IllegalArgumentException.class,
+                () -> new JspCCommandLineBuilder()
+                        .set(JspCCommandLineBuilder.JspCArgument.THREAD_COUNT, "no-number")
+                        .build());
+        MatcherAssert.assertThat(e.getMessage(), CoreMatchers.containsString("ERROR: Invalid number"));
     }
 
     @Test
     public void testInvalidThreadCountNoPositiveNumber() throws Exception {
-        thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("ERROR: Invalid number");
-        new JspCCommandLineBuilder()
+        IllegalArgumentException e = Assert.assertThrows(IllegalArgumentException.class,
+          () -> new JspCCommandLineBuilder()
                 .set(JspCCommandLineBuilder.JspCArgument.THREAD_COUNT, "0")
-                .build();
+                .build());
+        MatcherAssert.assertThat(e.getMessage(), CoreMatchers.containsString("ERROR: Invalid number"));
     }
 
     @Test
     public void testNoJSP() throws Exception {
-        thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("ERROR: No -webapp or JSP files passed");
-        new JspCCommandLineBuilder()
-                .build();
+        IllegalArgumentException e = Assert.assertThrows(IllegalArgumentException.class,
+                () -> new JspCCommandLineBuilder()
+                        .build());
+        MatcherAssert.assertThat(e.getMessage(), CoreMatchers.containsString("ERROR: No -webapp or JSP files passed"));
     }
 
     @Test
     public void testNoJSPInWebapp() throws Exception {
-        thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("ERROR: No JSP pages in webapp");
-        new JspCCommandLineBuilder()
-                .set(JspCCommandLineBuilder.JspCArgument.WEBAPP, "src")
-                .build();
+        IllegalArgumentException e = Assert.assertThrows(IllegalArgumentException.class,
+                () -> new JspCCommandLineBuilder()
+                        .set(JspCCommandLineBuilder.JspCArgument.WEBAPP, "src")
+                        .build());
+        MatcherAssert.assertThat(e.getMessage(), CoreMatchers.containsString("ERROR: No JSP pages in webapp"));
     }
 
     @Test

@@ -606,7 +606,7 @@ public class JspC {
                 }
             }
         } catch (IOException e) {
-            throw new JasperException("Error locating utiroot from the first JSP ", e);
+            throw new JasperException("Error locating uriroot from the first JSP ", e);
         }
         if (uriRoot == null) {
             throw new JasperException("The webapp path cannot be located using the first JSP file");
