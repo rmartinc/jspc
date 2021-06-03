@@ -88,10 +88,22 @@
 
     <profiles>
         <profile>
-            <id>wildfly22</id>
+            <id>wildfly23</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+            <properties>
+                <version.io.undertow.jastow.jastow>2.0.9.Final</version.io.undertow.jastow.jastow>
+                <version.org.jboss.metadata.jboss-metadata-web>13.0.0.Final</version.org.jboss.metadata.jboss-metadata-web>
+                <version.org.jboss.spec.javax.servlet.jsp.jboss-jsp-api>2.0.0.Final</version.org.jboss.spec.javax.servlet.jsp.jboss-jsp-api>
+                <version.org.jboss.logmanager.log4j-jboss-logmanager>1.2.0.Final</version.org.jboss.logmanager.log4j-jboss-logmanager>
+                <version.org.apache.taglibs.taglibs-standard-spec>1.2.6-RC1</version.org.apache.taglibs.taglibs-standard-spec>
+                <version.org.jboss.spec.javax.faces.jboss-jsf-api>3.0.0.SP04</version.org.jboss.spec.javax.faces.jboss-jsf-api>
+                <version.com.sun.faces.jsf-impl>2.3.14.SP04</version.com.sun.faces.jsf-impl>
+            </properties>
+        </profile>
+        <profile>
+            <id>wildfly22</id>
             <properties>
                 <version.io.undertow.jastow.jastow>2.0.9.Final</version.io.undertow.jastow.jastow>
                 <version.org.jboss.metadata.jboss-metadata-web>13.0.0.Final</version.org.jboss.metadata.jboss-metadata-web>
@@ -124,18 +136,6 @@
                 <version.org.apache.taglibs.taglibs-standard-spec>1.2.6-RC1</version.org.apache.taglibs.taglibs-standard-spec>
                 <version.org.jboss.spec.javax.faces.jboss-jsf-api>3.0.0.SP03</version.org.jboss.spec.javax.faces.jboss-jsf-api>
                 <version.com.sun.faces.jsf-impl>2.3.9.SP10</version.com.sun.faces.jsf-impl>
-            </properties>
-        </profile>
-        <profile>
-            <id>wildfly19</id>
-            <properties>
-                <version.io.undertow.jastow.jastow>2.0.8.Final</version.io.undertow.jastow.jastow>
-                <version.org.jboss.metadata.jboss-metadata-web>13.0.0.Final</version.org.jboss.metadata.jboss-metadata-web>
-                <version.org.jboss.spec.javax.servlet.jsp.jboss-jsp-api>2.0.0.Final</version.org.jboss.spec.javax.servlet.jsp.jboss-jsp-api>
-                <version.org.jboss.logmanager.log4j-jboss-logmanager>1.2.0.Final</version.org.jboss.logmanager.log4j-jboss-logmanager>
-                <version.org.apache.taglibs.taglibs-standard-spec>1.2.6-RC1</version.org.apache.taglibs.taglibs-standard-spec>
-                <version.org.jboss.spec.javax.faces.jboss-jsf-api>3.0.0.SP1</version.org.jboss.spec.javax.faces.jboss-jsf-api>
-                <version.com.sun.faces.jsf-impl>2.3.9.SP06</version.com.sun.faces.jsf-impl>
             </properties>
         </profile>
         <profile>
@@ -181,13 +181,36 @@
                 <executions>
                     <execution>
                         <goals>
-                          <goal>java</goal>
+                            <goal>java</goal>
                         </goals>
                     </execution>
                 </executions>
                 <configuration>
                     <mainClass>org.wildfly.jastow.jspc.JspC</mainClass>
                 </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>org.wildfly.jastow.jspc.JspC</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                      </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
