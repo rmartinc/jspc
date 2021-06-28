@@ -1,90 +1,123 @@
-<!--
-  ~ This is free software; you can redistribute it and/or modify it
-  ~ under the terms of the GNU Lesser General Public License as
-  ~ published by the Free Software Foundation; either version 2.1 of
-  ~ the License, or (at your option) any later version.
-  ~
-  ~ This software is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-  ~ Lesser General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Lesser General Public
-  ~ License along with this software; if not, write to the Free
-  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
-  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
-  -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-        http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wildfly.jastow.jspc</groupId>
-    <artifactId>jspc</artifactId>
+    <artifactId>jastow-jspc-parent</artifactId>
+    <packaging>pom</packaging>
     <version>1.0.0-SNAPSHOT</version>
-    <name>jspc</name>
-
+    <name>Jastow :: Jastow JSPC Parent</name>
+ 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <compiler.source>8</compiler.source>
+        <compiler.target>8</compiler.target>
+        <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
+        <maven.war.plugin.version>3.3.1</maven.war.plugin.version>
+        <codehaus.exec.maven.plugin.version>3.0.0</codehaus.exec.maven.plugin.version>
+        <maven.assembly.plugin.version>3.3.0</maven.assembly.plugin.version>
+        <maven.surefire.version>3.0.0-M5</maven.surefire.version>
+        <maven.failsafe.version>3.0.0-M5</maven.failsafe.version>
+        <maven.version>3.6.3</maven.version>
+        <maven.plugin-tools.version>3.6.0</maven.plugin-tools.version>
+        <version.org.jboss.arquillian.core>1.6.0.Final</version.org.jboss.arquillian.core>
+        <version.org.wildfly.arquillian>3.0.1.Final</version.org.wildfly.arquillian>
         <version.junit>4.13.1</version.junit>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>io.undertow.jastow</groupId>
-            <artifactId>jastow</artifactId>
-            <version>${version.io.undertow.jastow.jastow}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.metadata</groupId>
-            <artifactId>jboss-metadata-web</artifactId>
-            <version>${version.org.jboss.metadata.jboss-metadata-web}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.spec.javax.servlet.jsp</groupId>
-            <artifactId>jboss-jsp-api_2.3_spec</artifactId>
-            <version>${version.org.jboss.spec.javax.servlet.jsp.jboss-jsp-api}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.logmanager</groupId>
-            <artifactId>log4j-jboss-logmanager</artifactId>
-            <version>${version.org.jboss.logmanager.log4j-jboss-logmanager}</version>
-        </dependency>
+    <modules>
+        <module>tool</module>
+        <module>plugin</module>
+        <module>testlib</module>
+        <module>testapp</module>
+    </modules>
 
-        <!-- dependencies for standard TLDs -JSP and JSF- -->
-        <dependency>
-            <groupId>org.apache.taglibs</groupId>
-            <artifactId>taglibs-standard-spec</artifactId>
-            <version>${version.org.apache.taglibs.taglibs-standard-spec}</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.taglibs</groupId>
-            <artifactId>taglibs-standard-impl</artifactId>
-            <version>${version.org.apache.taglibs.taglibs-standard-spec}</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.spec.javax.faces</groupId>
-            <artifactId>jboss-jsf-api_2.3_spec</artifactId>
-            <version>${version.org.jboss.spec.javax.faces.jboss-jsf-api}</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.faces</groupId>
-            <artifactId>jsf-impl</artifactId>
-            <version>${version.com.sun.faces.jsf-impl}</version>
-            <optional>true</optional>
-        </dependency>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.undertow.jastow</groupId>
+                <artifactId>jastow</artifactId>
+                <version>${version.io.undertow.jastow.jastow}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.metadata</groupId>
+                <artifactId>jboss-metadata-web</artifactId>
+                <version>${version.org.jboss.metadata.jboss-metadata-web}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.spec.javax.servlet.jsp</groupId>
+                <artifactId>jboss-jsp-api_2.3_spec</artifactId>
+                <version>${version.org.jboss.spec.javax.servlet.jsp.jboss-jsp-api}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.logmanager</groupId>
+                <artifactId>log4j-jboss-logmanager</artifactId>
+                <version>${version.org.jboss.logmanager.log4j-jboss-logmanager}</version>
+            </dependency>
 
-        <!-- JUnit -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${version.junit}</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+            <dependency>
+                <groupId>org.apache.taglibs</groupId>
+                <artifactId>taglibs-standard-spec</artifactId>
+                <version>${version.org.apache.taglibs.taglibs-standard-spec}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.taglibs</groupId>
+                <artifactId>taglibs-standard-impl</artifactId>
+                <version>${version.org.apache.taglibs.taglibs-standard-spec}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.spec.javax.faces</groupId>
+                <artifactId>jboss-jsf-api_2.3_spec</artifactId>
+                <version>${version.org.jboss.spec.javax.faces.jboss-jsf-api}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.faces</groupId>
+                <artifactId>jsf-impl</artifactId>
+                <version>${version.com.sun.faces.jsf-impl}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-plugin-api</artifactId>
+                <version>${maven.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven.plugin-tools</groupId>
+                <artifactId>maven-plugin-annotations</artifactId>
+                <version>${maven.plugin-tools.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-artifact</artifactId>
+                <version>${maven.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven.plugin-tools</groupId>
+                <artifactId>maven-plugin-tools-api</artifactId>
+                <version>${maven.plugin-tools.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>junit</groupId>
+                        <artifactId>junit</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.arquillian.junit</groupId>
+                <artifactId>arquillian-junit-container</artifactId>
+                <version>${version.org.jboss.arquillian.core}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wildfly.arquillian</groupId>
+                <artifactId>wildfly-arquillian-container-managed</artifactId>
+                <version>${version.org.wildfly.arquillian}</version>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${version.junit}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <profiles>
         <profile>
@@ -100,6 +133,7 @@
                 <version.org.apache.taglibs.taglibs-standard-spec>1.2.6-RC1</version.org.apache.taglibs.taglibs-standard-spec>
                 <version.org.jboss.spec.javax.faces.jboss-jsf-api>3.0.0.SP04</version.org.jboss.spec.javax.faces.jboss-jsf-api>
                 <version.com.sun.faces.jsf-impl>2.3.14.SP04</version.com.sun.faces.jsf-impl>
+                <version.org.wildfly.wildfly.dist>23.0.2.Final</version.org.wildfly.wildfly.dist>
             </properties>
         </profile>
         <profile>
@@ -112,6 +146,7 @@
                 <version.org.apache.taglibs.taglibs-standard-spec>1.2.6-RC1</version.org.apache.taglibs.taglibs-standard-spec>
                 <version.org.jboss.spec.javax.faces.jboss-jsf-api>3.0.0.SP04</version.org.jboss.spec.javax.faces.jboss-jsf-api>
                 <version.com.sun.faces.jsf-impl>2.3.14.SP02</version.com.sun.faces.jsf-impl>
+                <version.org.wildfly.wildfly.dist>22.0.1.Final</version.org.wildfly.wildfly.dist>
             </properties>
         </profile>
         <profile>
@@ -124,6 +159,7 @@
                 <version.org.apache.taglibs.taglibs-standard-spec>1.2.6-RC1</version.org.apache.taglibs.taglibs-standard-spec>
                 <version.org.jboss.spec.javax.faces.jboss-jsf-api>3.0.0.SP04</version.org.jboss.spec.javax.faces.jboss-jsf-api>
                 <version.com.sun.faces.jsf-impl>2.3.14.SP01</version.com.sun.faces.jsf-impl>
+                <version.org.wildfly.wildfly.dist>21.0.2.Final</version.org.wildfly.wildfly.dist>
             </properties>
         </profile>
         <profile>
@@ -136,6 +172,7 @@
                 <version.org.apache.taglibs.taglibs-standard-spec>1.2.6-RC1</version.org.apache.taglibs.taglibs-standard-spec>
                 <version.org.jboss.spec.javax.faces.jboss-jsf-api>3.0.0.SP03</version.org.jboss.spec.javax.faces.jboss-jsf-api>
                 <version.com.sun.faces.jsf-impl>2.3.9.SP10</version.com.sun.faces.jsf-impl>
+                <version.org.wildfly.wildfly.dist>20.0.1.Final</version.org.wildfly.wildfly.dist>
             </properties>
         </profile>
         <profile>
@@ -148,6 +185,7 @@
                 <version.org.apache.taglibs.taglibs-standard-spec>1.2.6.RC1-redhat-1</version.org.apache.taglibs.taglibs-standard-spec>
                 <version.org.jboss.spec.javax.faces.jboss-jsf-api>3.0.0.SP01-redhat-00001</version.org.jboss.spec.javax.faces.jboss-jsf-api>
                 <version.com.sun.faces.jsf-impl>2.3.9.SP05-redhat-00001</version.com.sun.faces.jsf-impl>
+                <version.org.wildfly.wildfly.dist>18.0.1.Final</version.org.wildfly.wildfly.dist>
             </properties>
         </profile>
         <profile>
@@ -160,60 +198,11 @@
                 <version.org.apache.taglibs.taglibs-standard-spec>1.2.6.RC1-redhat-1</version.org.apache.taglibs.taglibs-standard-spec>
                 <version.org.jboss.spec.javax.faces.jboss-jsf-api>2.3.5.SP1-redhat-1</version.org.jboss.spec.javax.faces.jboss-jsf-api>
                 <version.com.sun.faces.jsf-impl>2.3.5.SP3-redhat-00001</version.com.sun.faces.jsf-impl>
+                <version.org.wildfly.wildfly.dist>14.0.1.Final</version.org.wildfly.wildfly.dist>
             </properties>
         </profile>
     </profiles>
 
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <mainClass>org.wildfly.jastow.jspc.JspC</mainClass>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.3.0</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>org.wildfly.jastow.jspc.JspC</mainClass>
-                        </manifest>
-                    </archive>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>make-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                      </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
     <repositories>
         <repository>
             <id>jboss</id>

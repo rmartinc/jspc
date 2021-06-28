@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee 
+         http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         version="3.1">
+    <jsp-config>
+        <taglib>
+            <taglib-uri>
+               http://tomcat.apache.org/example-taglib
+            </taglib-uri>
+            <taglib-location>
+               /mytags.tld
+            </taglib-location>
+        </taglib>
+    </jsp-config>
+</web-app>
