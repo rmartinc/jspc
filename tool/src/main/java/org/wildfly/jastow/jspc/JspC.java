@@ -94,6 +94,7 @@ public class JspC {
     private boolean failOnError = true;
     private boolean failFast = false;
     private int threadCount = (Runtime.getRuntime().availableProcessors() / 2) + 1;
+    private boolean deleteSources = false;
 
     static {
         // TODO: using log4j because logmanager needs to be initialized at
@@ -151,6 +152,10 @@ public class JspC {
     public Level getDebugLevel() {
         Logger jspcLogger = Logger.getLogger(this.getClass().getPackage().getName());
         return jspcLogger.getLevel();
+    }
+
+    public boolean getDeleteSources() {
+        return deleteSources;
     }
 
     // setters
@@ -281,6 +286,11 @@ public class JspC {
         return this;
     }
 
+    public JspC setDeleteSources(boolean deleteSources) {
+        this.deleteSources = deleteSources;
+        return this;
+    }
+
     // usage
 
     private void usage(String error) {
@@ -292,42 +302,44 @@ public class JspC {
         sb.append(nl)
                 .append("Usage: jspc <options> [--] <jsp files>").append(nl)
                 .append("where jsp files is").append(nl)
-                .append("    -webapp <dir>         A directory containing a web-app, whose JSP pages").append(nl)
-                .append("                          will be processed recursively").append(nl)
+                .append("    -webapp <dir>             A directory containing a web-app, whose JSP pages").append(nl)
+                .append("                              will be processed recursively").append(nl)
                 .append("or any number of").append(nl)
-                .append("    <file>                A file to be parsed as a JSP page").append(nl)
+                .append("    <file>                    A file to be parsed as a JSP page").append(nl)
                 .append("where options include:").append(nl)
-                .append("    -help                 Print this help message").append(nl)
-                .append("    -v[v]                 Verbose mode").append(nl)
-                .append("    -d <dir>              Output Directory (default -Djava.io.tmpdir)").append(nl)
-                .append("    -l                    Outputs the name of the JSP page upon failure").append(nl)
-                .append("    -s                    Outputs the name of the JSP page upon success").append(nl)
-                .append("    -p <name>             Name of target package (default org.apache.jsp)").append(nl)
-                .append("    -c <name>             Name of target class name (only applies to first JSP page)").append(nl)
-                .append("    -mapped               Generates separate write() calls for each HTML line in the JSP").append(nl)
-                .append("    -die <#>              Generates an error return code (#) on fatal errors (default 1)").append(nl)
-                .append("    -uribase <dir>        The uri directory compilations should be relative to").append(nl)
-                .append("                          (default \"/\")").append(nl)
-                .append("    -uriroot <dir>        Same as -webapp").append(nl)
-                //.append("    -compile              Compiles generated servlets").append(nl)
-                .append("    -noFailOnError        Do not fail on error and generate XML outputs if required").append(nl)
-                .append("    -failFast             Stop on first compile error").append(nl)
-                .append("    -webinc <file>        Creates a partial servlet mappings in the file").append(nl)
-                .append("    -webfrg <file>        Creates a complete web-fragment.xml file").append(nl)
-                .append("    -webxml <file>        Creates a complete web.xml in the file").append(nl)
-                .append("    -webxmlencoding <enc> Set the encoding charset used to read and write the web.xml").append(nl)
-                .append("                          file (default is UTF-8)").append(nl)
-                .append("    -addwebxmlmappings    Merge generated web.xml fragment into the web.xml file of the").append(nl)
-                .append("                          web-app, whose JSP pages we are processing").append(nl)
-                .append("    -ieplugin <clsid>     Java Plugin classid for Internet Explorer").append(nl)
-                .append("    -classpath <path>     Overrides java.class.path system property").append(nl)
-                .append("    -xpoweredBy           Add X-Powered-By response header").append(nl)
-                .append("    -trimSpaces           Remove template text that consists entirely of whitespace").append(nl)
-                .append("    -javaEncoding <enc>   Set the encoding charset for Java classes (default UTF-8)").append(nl)
-                .append("    -source <version>     Set the -source argument to the compiler (default 1.8)").append(nl)
-                .append("    -target <version>     Set the -target argument to the compiler (default 1.8)").append(nl)
-                .append("    -threadCount <count>  Number of threads to use for compilation.").append(nl)
-                .append("                          (\"2.0C\" means two threads per core)").append(nl);
+                .append("    -help                     Print this help message").append(nl)
+                .append("    -v[v]                     Verbose mode").append(nl)
+                .append("    -d <dir>                  Output Directory (default -Djava.io.tmpdir)").append(nl)
+                .append("    -l                        Outputs the name of the JSP page upon failure").append(nl)
+                .append("    -s                        Outputs the name of the JSP page upon success").append(nl)
+                .append("    -p <name>                 Name of target package (default org.apache.jsp)").append(nl)
+                .append("    -c <name>                 Name of target class name (only applies to first JSP page)").append(nl)
+                .append("    -mapped                   Generates separate write() calls for each HTML line in the JSP").append(nl)
+                .append("    -die <#>                  Generates an error return code (#) on fatal errors (default 1)").append(nl)
+                .append("    -uribase <dir>            The uri directory compilations should be relative to").append(nl)
+                .append("                              (default \"/\")").append(nl)
+                .append("    -uriroot <dir>            Same as -webapp").append(nl)
+                //.append("    -compile                  Compiles generated servlets").append(nl)
+                .append("    -noFailOnError            Do not fail on error and generate XML outputs if required").append(nl)
+                .append("    -failFast                 Stop on first compile error").append(nl)
+                .append("    -webinc <file>            Creates a partial servlet mappings in the file").append(nl)
+                .append("    -webfrg <file>            Creates a complete web-fragment.xml file").append(nl)
+                .append("    -webxml <file>            Creates a complete web.xml in the file").append(nl)
+                .append("    -webxmlencoding <enc>     Set the encoding charset used to read and write the web.xml").append(nl)
+                .append("                              file (default is UTF-8)").append(nl)
+                .append("    -addwebxmlmappings [file] Merge generated web.xml fragment into the web.xml file of the web-app,").append(nl)
+                .append("                              whose JSP pages we are processing, if <file> is passed the merging").append(nl)
+                .append("                              is saved in the passed file instead of the original web.xml in the app.").append(nl)
+                .append("    -ieplugin <clsid>         Java Plugin classid for Internet Explorer").append(nl)
+                .append("    -classpath <path>         Overrides java.class.path system property").append(nl)
+                .append("    -xpoweredBy               Add X-Powered-By response header").append(nl)
+                .append("    -trimSpaces               Remove template text that consists entirely of whitespace").append(nl)
+                .append("    -javaEncoding <enc>       Set the encoding charset for Java classes (default UTF-8)").append(nl)
+                .append("    -source <version>         Set the -source argument to the compiler (default 1.8)").append(nl)
+                .append("    -target <version>         Set the -target argument to the compiler (default 1.8)").append(nl)
+                .append("    -threadCount <count>      Number of threads to use for compilation.").append(nl)
+                .append("                              (\"2.0C\" means two threads per core)").append(nl)
+                .append("    -deletesources            Delete generated Java source files.").append(nl);
         throw new IllegalArgumentException(sb.toString());
     }
 
@@ -485,6 +497,9 @@ public class JspC {
                     if (webxmlLevel != null) {
                         usage(String.format("Invalid -addwebxmlmappings option because the output was previously set to \"%s\"", webxmlLevel.name()));
                     }
+                    if (i + 1 < args.length && !args[i + 1].startsWith("-")) {
+                        setWebxmlFile(parseWritableFile(args[i], ++i, args));
+                    }
                     setWebxmlLevel(WEBXML_LEVEL.MERGE_WEBXML);
                     break;
                 case "-webxmlencoding":
@@ -514,8 +529,7 @@ public class JspC {
                 case "-threadCount":
                     String option = getArgumentIndex(args[i], i+1, args);
                     if (option.endsWith("C")) {
-                        setThreadCount((int) (parseDouble("-threadCount", option.substring(0, option.length() - 1))
-                                * Runtime.getRuntime().availableProcessors()));
+                        setThreadCount((int) Math.ceil(parseDouble("-threadCount", option.substring(0, option.length() - 1)) * Runtime.getRuntime().availableProcessors()));
                         i++;
                     } else {
                         setThreadCount(parseInteger(args[i], ++i, args));
@@ -523,6 +537,9 @@ public class JspC {
                     if (threadCount <= 0) {
                         usage(String.format("Invalid number of threads \"%s\"", args[i]));
                     }
+                    break;
+                case "-deletesources":
+                    setDeleteSources(true);
                     break;
                 default:
                     if (args[i].equals("--")) {
@@ -784,12 +801,13 @@ public class JspC {
         // TODO: maybe split the method in several parts
         File webXml = new File(this.uriRoot, "/WEB-INF/web.xml");
         Set<String> stopElements = new HashSet(Arrays.asList(new String[]{"servlet-mapping", "session-config",
-            "mime-mapping", "welcome-file-list", "error-page", "taglib", "resource-env-ref",
-            "resource-ref", "security-constraint", "login-config", "security-role", "env-entry",
-            "ejb-ref", "ejb-local-ref"}));
+            "mime-mapping", "welcome-file-list", "error-page", "jsp-config", "security-constraint",
+            "login-config", "security-role", "env-entry", "ejb-ref", "ejb-local-ref"}));
         if (!webXml.exists()) {
             // just write the file from scratch
-            this.webxmlFile = webXml.getAbsolutePath();
+            if (this.webxmlFile == null) {
+                this.webxmlFile = webXml.getAbsolutePath();
+            }
             writeAllWebXml();
         } else {
             Document doc = Utils.readXmlIntoDocument(webXml);
@@ -861,16 +879,18 @@ public class JspC {
                 doc.getDocumentElement().appendChild(doc.createComment("End of web include"));
                 doc.getDocumentElement().appendChild(doc.createTextNode("\n\n    "));
             }
-            // move the current file to a backup just in case
-            String fileName = webXml.getAbsolutePath();
-            File backup = new File(fileName + ".jspc-" + new SimpleDateFormat("YYYYMMddHHmmss").format(new Date()));
-            webXml.renameTo(backup);
+            if (webxmlFile == null) {
+                // move the current file to a backup just in case and overwrite the web.xml in the app
+                webxmlFile = webXml.getAbsolutePath();
+                File backup = new File(webxmlFile + ".jspc-" + new SimpleDateFormat("YYYYMMddHHmmss").format(new Date()));
+                webXml.renameTo(backup);
+            }
             // write the contents to web.xml
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             transformer.setOutputProperty(OutputKeys.ENCODING, webxmlEncoding.name());
             DOMSource source = new DOMSource(doc);
-            StreamResult result = new StreamResult(fileName);
+            StreamResult result = new StreamResult(webxmlFile);
             transformer.transform(source, result);
         }
     }
@@ -885,7 +905,7 @@ public class JspC {
             writer.newLine();
             writer.write("              version=\"4.0\" metadata-complete=\"true\">");
             writer.newLine();
-            writer.write("    <name>org_apache_jasper.jspc</name>");
+            writer.write("    <name>org.wildfly.jastow.jspc</name>");
             writer.newLine();
             writer.write("    <!-- Automatically generated web-fragment.xml -->");
             writer.newLine();
@@ -1084,6 +1104,11 @@ public class JspC {
             jsw.compile();
             String servletName = ("".equals(jsw.getServletPackageName()))?
                     jsw.getServletClassName() : jsw.getServletPackageName() + '.' + jsw.getServletClassName();
+            // delete java file if necessary
+            if (deleteSources) {
+                final Path javaFile = this.options.getScratchDir().toPath().resolve(servletName.replace('.', File.separatorChar) + ".java");
+                Files.deleteIfExists(javaFile);
+            }
             // add the results to the list
             this.results.addSuccess(jspUri, servletName);
 

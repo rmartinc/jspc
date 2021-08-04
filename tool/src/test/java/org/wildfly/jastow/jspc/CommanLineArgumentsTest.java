@@ -109,6 +109,15 @@ public class CommanLineArgumentsTest {
     }
 
     @Test
+    public void testInvalidAddWebXmlMappings() throws Exception {
+        IllegalArgumentException e = Assert.assertThrows(IllegalArgumentException.class,
+                () -> new JspCCommandLineBuilder()
+                        .set(JspCCommandLineBuilder.JspCArgument.ADD_WEB_XML_MAPPINGS, "invalid-dir/invalid-file")
+                        .build());
+        MatcherAssert.assertThat(e.getMessage(), CoreMatchers.containsString("ERROR: Invalid writable file"));
+    }
+
+    @Test
     public void testInvalidWebxmlFile() throws Exception {
         IllegalArgumentException e = Assert.assertThrows(IllegalArgumentException.class,
                 () -> new JspCCommandLineBuilder()
@@ -194,6 +203,7 @@ public class CommanLineArgumentsTest {
         Assert.assertEquals("target option", "1.8", jspc.getOptions().getCompilerSourceVM());
         Assert.assertEquals("target option", "1.8", jspc.getOptions().getCompilerTargetVM());
         Assert.assertEquals("threadCount option", (Runtime.getRuntime().availableProcessors() / 2) + 1, jspc.getThreadCount());
+        Assert.assertEquals("deletesources option", false, jspc.getDeleteSources());
     }
 
     @Test
@@ -221,6 +231,7 @@ public class CommanLineArgumentsTest {
                     .set(JspCCommandLineBuilder.JspCArgument.SOURCE, "1.7")
                     .set(JspCCommandLineBuilder.JspCArgument.TARGET, "1.7")
                     .set(JspCCommandLineBuilder.JspCArgument.THREAD_COUNT, "1")
+                    .set(JspCCommandLineBuilder.JspCArgument.DELETE_SOURCES)
                     .addFile("samples/simple.jsp")
                     .build();
             Assert.assertEquals("Argument webapp assigned", new File("samples").getCanonicalFile(), new File(jspc.getUriRoot()).getCanonicalFile());
@@ -243,6 +254,7 @@ public class CommanLineArgumentsTest {
             Assert.assertEquals("target option", "1.7", jspc.getOptions().getCompilerSourceVM());
             Assert.assertEquals("target option", "1.7", jspc.getOptions().getCompilerTargetVM());
             Assert.assertEquals("threadCount option", 1, jspc.getThreadCount());
+            Assert.assertEquals("deletesources option", true, jspc.getDeleteSources());
         } finally {
             deleteTemporaryDir(outputDir);
             deleteTemporaryFile(webincFile);

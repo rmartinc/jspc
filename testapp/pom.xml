@@ -39,6 +39,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.wildfly.jastow.jspc</groupId>
+            <artifactId>jastow-jspc-maven-plugin-webfragment</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.jboss.arquillian.junit</groupId>
             <artifactId>arquillian-junit-container</artifactId>
             <scope>test</scope>
@@ -79,6 +84,7 @@
                         </goals>
                         <configuration>
                             <useProvidedScope>true</useProvidedScope>
+                            <targetPackage>test.app.servlet</targetPackage>
                         </configuration>
                     </execution>
                 </executions>

@@ -17,11 +17,19 @@ package org.wildfly.jastow.jspc;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
+import javax.xml.XMLConstants;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 import org.apache.log4j.Level;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -75,8 +83,8 @@ public class CompilationTest {
         Assert.assertEquals("Correct URI", "com.sample.precompiled.SimpleJSP", results.getResults().get(0).getServletName());
         Assert.assertNull("No error", results.getResults().get(0).getError());
         String pathName = results.getResults().get(0).getServletName().replace(".", File.separator);
-        Assert.assertTrue("Class file exists", new File(tempDir + "/" + pathName + ".class").exists());
-        Assert.assertTrue("Java file exists", new File(tempDir + "/" + pathName + ".java").exists());
+        Assert.assertTrue("Class file exists", Files.exists(Paths.get(tempDir).resolve(pathName + ".class")));
+        Assert.assertTrue("Java file exists", Files.exists(Paths.get(tempDir).resolve(pathName + ".java")));
         Assert.assertTrue("web-inc.xml file exists", Files.exists(Paths.get(tempDir + "/web-inc.xml")));
         Assert.assertTrue("web-inc.xml is not empty", Files.size(Paths.get(tempDir + "/web-inc.xml")) > 0);
     }
@@ -88,7 +96,7 @@ public class CompilationTest {
                 .setOutputDir(tempDir)
                 .setWebxmlLevel(JspC.WEBXML_LEVEL.FRG_WEBXML)
                 .setWebxmlFile(tempDir + "/web-fragment.xml")
-                .setThreadCount(2)
+                .setThreadCount(1)
                 .addPage("samples/error.jsp.err")
                 .addPage("samples/jstl-bean.jsp")
                 .addPage("samples/simple.jsp")
@@ -110,7 +118,7 @@ public class CompilationTest {
                 .setWebxmlLevel(JspC.WEBXML_LEVEL.FRG_WEBXML)
                 .setWebxmlFile(tempDir + "/web-fragment.xml")
                 .setFailFast(true)
-                .setThreadCount(2)
+                .setThreadCount(1)
                 .addPage("samples/error.jsp.err")
                 .addPage("samples/jstl-bean.jsp")
                 .addPage("samples/simple.jsp")
@@ -132,7 +140,7 @@ public class CompilationTest {
                 .setWebxmlLevel(JspC.WEBXML_LEVEL.ALL_WEBXML)
                 .setWebxmlFile(tempDir + "/web.xml")
                 .setFailOnError(false)
-                .setThreadCount(2)
+                .setThreadCount(1)
                 .addPage("samples/error.jsp.err")
                 .addPage("samples/jstl-bean.jsp")
                 .addPage("samples/simple.jsp")
@@ -179,6 +187,56 @@ public class CompilationTest {
     }
 
     @Test
+    public void testDeleteJava() throws Exception {
+        JspCResults results = new JspC()
+                .setDebugLevel(Level.OFF)
+                .setTargetPackage("com.sample.precompiled")
+                .setOutputDir(tempDir)
+                .setWebxmlLevel(JspC.WEBXML_LEVEL.FRG_WEBXML)
+                .setWebxmlFile(tempDir + "/web-fragment.xml")
+                .setThreadCount(1)
+                .setDeleteSources(true)
+                .addPage("samples/simple.jsp")
+                .addPage("samples/another-simple.jsp")
+                .execute();
+        Assert.assertFalse("Error result", results.isError());
+        Assert.assertEquals("No error", 0, results.errors());
+        Assert.assertEquals("No error", 2, results.total());
+        Assert.assertEquals("No error", 2, results.results());
+        for (JspCResults.ResultEntry result : results.getResults()) {
+            String pathName = result.getServletName().replace(".", File.separator);
+            Assert.assertTrue("Class file exists", Files.exists(Paths.get(tempDir).resolve(pathName + ".class")));
+            Assert.assertTrue("Java file does not exist", !Files.exists(Paths.get(tempDir).resolve(pathName + ".java")));
+        }
+        Assert.assertTrue("web-fragment.xml file exists", Files.exists(Paths.get(tempDir + "/web-fragment.xml")));
+        Assert.assertTrue("web-fragment.xml is not empty", Files.size(Paths.get(tempDir + "/web-fragment.xml")) > 0);
+    }
+
+    @Test
+    public void testCompilationMergeXml() throws Exception {
+        JspCResults results = new JspC()
+                .setDebugLevel(Level.OFF)
+                .setOutputDir(tempDir)
+                .setUriRoot("samples")
+                .setWebxmlLevel(JspC.WEBXML_LEVEL.MERGE_WEBXML)
+                .setWebxmlFile(tempDir + "/web.xml")
+                .setWebxmlEncoding(StandardCharsets.UTF_8)
+                .execute();
+        Assert.assertFalse("Error result", results.isError());
+        Assert.assertEquals("No error", 0, results.errors());
+        Assert.assertEquals("No error", 17, results.total());
+        Assert.assertEquals("No error", 17, results.results());
+        Assert.assertTrue("web.xml file exists", Files.exists(Paths.get(tempDir + "/web.xml")));
+        Assert.assertTrue("web.xml is not empty", Files.size(Paths.get(tempDir + "/web.xml")) > 0);
+        MatcherAssert.assertThat(new String(Files.readAllBytes(Paths.get(tempDir + "/web.xml")), StandardCharsets.UTF_8),
+                CoreMatchers.containsString("<servlet-name>FacesServlet</servlet-name>"));
+        SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        Schema schema = schemaFactory.newSchema(new File(getClass().getClassLoader().getResource("web-app_3_1.xsd").getFile()));
+        Validator validator = schema.newValidator();
+        validator.validate(new StreamSource(Paths.get(tempDir + "/web.xml").toFile()));
+    }
+
+    @Test
     public void testCompilationAll() throws Exception {
         JspCResults results = new JspC()
                 .setDebugLevel(Level.OFF)
@@ -194,5 +252,4 @@ public class CompilationTest {
         Assert.assertTrue("web-fragment.xml file exists", Files.exists(Paths.get(tempDir + "/web-fragment.xml")));
         Assert.assertTrue("web-fragment.xml is not empty", Files.size(Paths.get(tempDir + "/web-fragment.xml")) > 0);
     }
-
 }

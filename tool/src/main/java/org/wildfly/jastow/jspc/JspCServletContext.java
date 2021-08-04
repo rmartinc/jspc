@@ -230,6 +230,7 @@ public class JspCServletContext implements ServletContext {
             return url;
         } catch (IOException e) {
             log.trace("File not found in local path: " + path, e);
+            url = null;
         }
         // search on JARS under the /META-INF/resources
         if (loader != null) {

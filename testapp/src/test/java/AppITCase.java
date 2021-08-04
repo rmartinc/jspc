@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -54,102 +55,109 @@ public class AppITCase {
         }
     }
 
-    // test precompilation is done and the context param is inserted
+    // test precompilation is done and the servlet name contains the specific package
 
     @Test
     public void testPrecompile() throws IOException {
-        Assert.assertThat(doGet("precompile.jsp"), CoreMatchers.containsString("org.wildfly.jastow.jspc.precompiled=true"));
+        MatcherAssert.assertThat(doGet("precompile.jsp"), CoreMatchers.containsString("servletName=test.app.servlet"));
     }
 
     // simple JSPs
 
     @Test
     public void testSimple() throws IOException {
-        Assert.assertThat(doGet("simple.jsp"), CoreMatchers.containsString("Welcome to javaTpoint"));
+        MatcherAssert.assertThat(doGet("simple.jsp"), CoreMatchers.containsString("Welcome to javaTpoint"));
     }
 
     @Test
     public void testAnotherSimple() throws IOException {
-        Assert.assertThat(doGet("another-simple.jsp"), CoreMatchers.containsString("<title>First JSP</title>"));
+        MatcherAssert.assertThat(doGet("another-simple.jsp"), CoreMatchers.containsString("<title>First JSP</title>"));
     }
 
     @Test
     public void testJspInDir() throws IOException {
-        Assert.assertThat(doGet("dir1/jsp-in-dir.jsp"), CoreMatchers.containsString("Current Time is"));
+        MatcherAssert.assertThat(doGet("dir1/jsp-in-dir.jsp"), CoreMatchers.containsString("Current Time is"));
     }
 
     // includes
 
     @Test
     public void testInclude() throws IOException {
-        Assert.assertThat(doGet("jsp-include-main.jsp"), CoreMatchers.containsString("This is the content of my file"));
+        MatcherAssert.assertThat(doGet("jsp-include-main.jsp"), CoreMatchers.containsString("This is the content of my file"));
     }
 
     @Test
     public void testIncludeJar() throws IOException {
-        Assert.assertThat(doGet("jsp-include-main-jar.jsp"), CoreMatchers.containsString("This is the content of my file in a resources jar"));
+        MatcherAssert.assertThat(doGet("jsp-include-main-jar.jsp"), CoreMatchers.containsString("This is the content of my file in a resources jar"));
     }
 
     // TLDs
 
     @Test
     public void testTldDirect() throws IOException {
-        Assert.assertThat(doGet("tld-direct.jsp"), CoreMatchers.containsString("Current Date and Time is: "));
+        MatcherAssert.assertThat(doGet("tld-direct.jsp"), CoreMatchers.containsString("Current Date and Time is: "));
     }
 
     @Test
     public void testTldWebXml() throws IOException {
-        Assert.assertThat(doGet("tld-in-web.jsp"), CoreMatchers.containsString("Current Date and Time is: "));
+        MatcherAssert.assertThat(doGet("tld-in-web.jsp"), CoreMatchers.containsString("Current Date and Time is: "));
     }
 
     @Test
     public void testTldWebInf() throws IOException {
-        Assert.assertThat(doGet("tld-in-web-inf.jsp"), CoreMatchers.containsString("Hello Custom Tag!"));
+        MatcherAssert.assertThat(doGet("tld-in-web-inf.jsp"), CoreMatchers.containsString("Hello Custom Tag!"));
     }
 
     @Test
     public void testTldJar() throws IOException {
-        Assert.assertThat(doGet("tld-in-jar-resources.jsp"), CoreMatchers.containsString("SUBSTR(GOODMORNING, 1, 6) is"));
+        MatcherAssert.assertThat(doGet("tld-in-jar-resources.jsp"), CoreMatchers.containsString("SUBSTR(GOODMORNING, 1, 6) is"));
     }
 
     // JSTL
 
     @Test
     public void testJstlSimple() throws IOException {
-        Assert.assertThat(doGet("jstl-simple.jsp"), CoreMatchers.containsString("Welcome to javaTpoint"));
+        MatcherAssert.assertThat(doGet("jstl-simple.jsp"), CoreMatchers.containsString("Welcome to javaTpoint"));
     }
 
     @Test
     public void testJstlBean() throws IOException {
-        Assert.assertThat(doGet("jstl-bean.jsp"), CoreMatchers.containsString("Zara"));
+        MatcherAssert.assertThat(doGet("jstl-bean.jsp"), CoreMatchers.containsString("Zara"));
     }
 
     @Test
     public void testJstlImport() throws IOException {
-        Assert.assertThat(doGet("jstl-import.jsp"), CoreMatchers.containsString("Padam History"));
+        MatcherAssert.assertThat(doGet("jstl-import.jsp"), CoreMatchers.containsString("Padam History"));
     }
 
     @Test
     public void testJstlSql() throws IOException {
-        Assert.assertThat(doGet("jstl-sql.jsp"), CoreMatchers.containsString("<td>surname</td>"));
+        MatcherAssert.assertThat(doGet("jstl-sql.jsp"), CoreMatchers.containsString("<td>surname</td>"));
     }
 
     // EL
 
     @Test
     public void testElSimple() throws IOException {
-        Assert.assertThat(doGet("el-simple.jsp"), CoreMatchers.containsString("b is TRUE"));
+        MatcherAssert.assertThat(doGet("el-simple.jsp"), CoreMatchers.containsString("b is TRUE"));
     }
 
     @Test
     public void testElConstants() throws IOException {
-        Assert.assertThat(doGet("el-constants.jsp"), CoreMatchers.containsString("Integer.MAX_VALUE: 2147483647"));
+        MatcherAssert.assertThat(doGet("el-constants.jsp"), CoreMatchers.containsString("Integer.MAX_VALUE: 2147483647"));
     }
 
     // JSF
 
     @Test
     public void testJsfConvertor() throws IOException {
-        Assert.assertThat(doGet("faces/Convertor.jsp"), CoreMatchers.containsString("Celsius"));
+        MatcherAssert.assertThat(doGet("faces/Convertor.jsp"), CoreMatchers.containsString("Celsius"));
+    }
+
+    // web-fragment from the other sub project
+
+    @Test
+    public void testWebFragment() throws IOException {
+        MatcherAssert.assertThat(doGet("/web-fragment.jsp"), CoreMatchers.containsString("Web Fragment Example"));
     }
 }

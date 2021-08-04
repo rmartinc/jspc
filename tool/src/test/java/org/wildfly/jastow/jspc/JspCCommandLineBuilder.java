@@ -31,47 +31,50 @@ import org.apache.jasper.JasperException;
  */
 public class JspCCommandLineBuilder {
 
+    protected enum ValueType {NEEDED, OPTIONAL, NONE};
+
     protected enum JspCArgument {
-        WEBAPP("-webapp", true),
+        WEBAPP("-webapp", ValueType.NEEDED),
         HELP("-help"),
         VERBOSE("-v"),
         VERY_VERBOSE("-vv"),
-        OUTPUT_DIR("-d", true),
+        OUTPUT_DIR("-d", ValueType.NEEDED),
         LIST_ERRORS("-l"),
         SHOW_SUCCESS("-s"),
-        PACKAGE("-p", true),
-        CLASSNAME("-c", true),
+        PACKAGE("-p", ValueType.NEEDED),
+        CLASSNAME("-c", ValueType.NEEDED),
         MAPPED("-mapped"),
-        DIE("-die", true),
-        URIBASE("-uribase", true),
-        URIROOT("-uriroot", true),
+        DIE("-die", ValueType.NEEDED),
+        URIBASE("-uribase", ValueType.NEEDED),
+        URIROOT("-uriroot", ValueType.NEEDED),
         NO_FAIL_ON_ERROR("-noFailOnError"),
         FAIL_FAST("-failFast"),
-        WEB_INC("-webinc", true),
-        WEB_FRG("-webfrg", true),
-        WEB_XML("-webxml", true),
-        WEB_XML_ENCODING("-webxmlencoding", true),
-        ADD_WEB_XML_MAPPINGS("-addwebxmlmappings"),
-        IE_PUGLIN("-ieplugin", true),
-        CLASSPATH("-classpath", true),
+        WEB_INC("-webinc", ValueType.NEEDED),
+        WEB_FRG("-webfrg", ValueType.NEEDED),
+        WEB_XML("-webxml", ValueType.NEEDED),
+        WEB_XML_ENCODING("-webxmlencoding", ValueType.NEEDED),
+        ADD_WEB_XML_MAPPINGS("-addwebxmlmappings", ValueType.OPTIONAL),
+        IE_PUGLIN("-ieplugin", ValueType.NEEDED),
+        CLASSPATH("-classpath", ValueType.NEEDED),
         X_POWERED_BY("-xpoweredBy"),
         TRIM_SPACES("-trimSpaces"),
-        JAVA_ENCODING("-javaEncoding", true),
-        SOURCE("-source", true),
-        TARGET("-target", true),
-        THREAD_COUNT("-threadCount", true);
+        JAVA_ENCODING("-javaEncoding", ValueType.NEEDED),
+        SOURCE("-source", ValueType.NEEDED),
+        TARGET("-target", ValueType.NEEDED),
+        THREAD_COUNT("-threadCount", ValueType.NEEDED),
+        DELETE_SOURCES("-deletesources");
 
         private final String argument;
-        private final boolean valueNeeded;
+        private final ValueType valueType;
 
         private JspCArgument(String argument) {
             this.argument = argument;
-            this.valueNeeded = false;
+            this.valueType = ValueType.NONE;
         }
 
-        private JspCArgument(String argument, boolean valueNeeded) {
+        private JspCArgument(String argument, ValueType valueType) {
             this.argument = argument;
-            this.valueNeeded = valueNeeded;
+            this.valueType = valueType;
         }
 
         public String getArgument() {
@@ -79,7 +82,15 @@ public class JspCCommandLineBuilder {
         }
 
         public boolean isValueNeeded() {
-            return valueNeeded;
+            return valueType == ValueType.NEEDED;
+        }
+
+        public boolean isValueNone() {
+            return valueType == ValueType.NONE;
+        }
+
+        public boolean isValueOptional() {
+            return valueType == ValueType.OPTIONAL;
         }
     };
 
@@ -99,7 +110,7 @@ public class JspCCommandLineBuilder {
     public JspCCommandLineBuilder set(JspCArgument arg, String value) {
         if (arg.isValueNeeded() && value == null) {
             throw new IllegalArgumentException(String.format("Argument \"%s\" needs a value", arg.getArgument()));
-        } else if (!arg.isValueNeeded() && value != null) {
+        } else if (arg.isValueNone() && value != null) {
             throw new IllegalArgumentException(String.format("Argument \"%s\" doesn't need a value", arg.getArgument()));
         }
         arguments.put(arg.getArgument(), value);

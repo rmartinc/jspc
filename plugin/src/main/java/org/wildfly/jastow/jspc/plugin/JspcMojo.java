@@ -15,15 +15,7 @@
  */
 package org.wildfly.jastow.jspc.plugin;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileFilter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Reader;
-import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -46,29 +38,16 @@ import org.wildfly.jastow.jspc.JspC;
 import org.wildfly.jastow.jspc.JspCResults;
 
 /**
- * Copy of
- * https://github.com/eclipse/jetty.project/blob/jetty-11.0.x/jetty-jspc-maven-plugin/src/main/java/org/eclipse/jetty/jspc/plugin/JspcMojo.java
- * but using jastow version of JspC.
- *
- * WIP for the moment.
- *
+ * <p>Class initially based on the
+ * <a href="https://github.com/eclipse/jetty.project/blob/jetty-11.0.x/jetty-jspc-maven-plugin/src/main/java/org/eclipse/jetty/jspc/plugin/JspcMojo.java">jetty maven plugin</a>.
+ * The idea is using a maven plugin in order to execute the jastow JspC tool.
  * This goal will compile jsps for a webapp so that they can be included in a
- * war.
- * <p>
- * At runtime, the plugin will use the jspc compiler to precompile jsps and
- * tags.
- * </p>
- * <p>
- * Note that the same java compiler will be used as for on-the-fly compiled
- * jsps, which will be the Eclipse java compiler.
- * <p>
- * <p>Runs jspc compiler to produce .java and .class files.</p>
+ * war or jar bundle.</p>
+ *
+ * <p>Runs jastow jspc compiler to produce .java and .class files.</p>
  */
 @Mojo(name = "jspc", defaultPhase = LifecyclePhase.PROCESS_CLASSES, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME, threadSafe = true)
 public class JspcMojo extends AbstractMojo {
-
-    public static final String END_OF_WEBAPP = "</web-app>";
-    public static final String PRECOMPILED_FLAG = "org.wildfly.jastow.jspc.precompiled";
 
     /**
      * Whether or not to include dependencies on the plugin's classpath with
@@ -97,29 +76,19 @@ public class JspcMojo extends AbstractMojo {
     private List<Artifact> pluginArtifacts;
 
     /**
+     * Type of file to generate with the servlets and filters (JspC.WEBXML_LEVEL).
+     * It should be: INC_WEBXML, FRG_WEBXML, ALL_WEBXML, MERGE_WEBXML. Default
+     * values is MERGE_WEBXML to add the info into the existing app web.xml.
+     */
+    @Parameter(defaultValue = "MERGE_WEBXML")
+    private String webXmlType;
+
+    /**
      * File into which to generate the &lt;servlet&gt; and
      * &lt;servlet-mapping&gt; tags for the compiled jsps
      */
-    @Parameter(defaultValue = "${basedir}/target/webfrag.xml")
-    private String webXmlFragment;
-
-    /**
-     * Optional. A marker string in the src web.xml file which indicates where
-     * to merge in the generated web.xml fragment. Note that the marker string
-     * will NOT be preserved during the insertion. Can be left blank, in which
-     * case the generated fragment is inserted just before the &lt;/web-app&gt;
-     * line
-     */
-    @Parameter
-    private String insertionMarker;
-
-    /**
-     * Merge the generated fragment file with the web.xml from
-     * webAppSourceDirectory. The merged file will go into the same directory as
-     * the webXmlFragment.
-     */
-    @Parameter(defaultValue = "true")
-    private boolean mergeFragment;
+    @Parameter(defaultValue = "${basedir}/target/web.xml")
+    private String webXml;
 
     /**
      * The destination directory into which to put the compiled jsps.
@@ -139,12 +108,6 @@ public class JspcMojo extends AbstractMojo {
      */
     @Parameter(defaultValue = "${basedir}/src/main/webapp")
     private String webAppSourceDirectory;
-
-    /**
-     * Location of web.xml. Defaults to src/main/webapp/web.xml.
-     */
-    @Parameter(defaultValue = "${basedir}/src/main/webapp/WEB-INF/web.xml")
-    private String webXml;
 
     /**
      * The comma separated list of patterns for file extensions to be processed.
@@ -167,16 +130,22 @@ public class JspcMojo extends AbstractMojo {
     private File classesDirectory;
 
     /**
-     * Source version - if not set defaults to jsp default (currently 1.7)
+     * Source version - if not set defaults to jsp default.
      */
     @Parameter
     private String sourceVersion;
 
     /**
-     * Target version - if not set defaults to jsp default (currently 1.7)
+     * Target version - if not set defaults to jsp default.
      */
     @Parameter
     private String targetVersion;
+
+    /**
+     * Package name used for the compiled servlets.
+     */
+    @Parameter
+    private String targetPackage;
 
     /**
      * The JspC instance being used to compile the jsps.
@@ -190,11 +159,10 @@ public class JspcMojo extends AbstractMojo {
 
             getLog().info("webAppSourceDirectory=" + webAppSourceDirectory);
             getLog().info("generatedClasses=" + generatedClasses);
-            getLog().info("webXmlFragment=" + webXmlFragment);
+            getLog().info("webXmlType=" + webXmlType);
             getLog().info("webXml=" + webXml);
-            getLog().info("insertionMarker=" + (insertionMarker == null || insertionMarker.equals("") ? END_OF_WEBAPP : insertionMarker));
             getLog().info("keepSources=" + keepSources);
-            getLog().info("mergeFragment=" + mergeFragment);
+            getLog().info("targetPackage=" + targetPackage);
             if (sourceVersion != null) {
                 getLog().info("sourceVersion=" + sourceVersion);
             }
@@ -205,8 +173,6 @@ public class JspcMojo extends AbstractMojo {
         try {
             prepare();
             compile();
-            cleanupSrcs();
-            mergeWebXml();
         } catch (Exception e) {
             throw new MojoExecutionException("Failure processing jsps", e);
         }
@@ -257,10 +223,14 @@ public class JspcMojo extends AbstractMojo {
                 jspc = new JspC();
             }
 
-            jspc.setWebxmlLevel(JspC.WEBXML_LEVEL.INC_WEBXML);
-            jspc.setWebxmlFile(webXmlFragment);
             jspc.setUriRoot(webAppSourceDirectory);
             jspc.setOutputDir(generatedClasses);
+            jspc.setDeleteSources(!keepSources);
+            jspc.setWebxmlLevel(JspC.WEBXML_LEVEL.valueOf(webXmlType));
+            jspc.setWebxmlFile(webXml);
+            if (targetPackage != null) {
+                jspc.setTargetPackage(targetPackage);
+            }
             if (sourceVersion != null) {
                 jspc.setCompilerSourceVM(sourceVersion);
             }
@@ -294,179 +264,6 @@ public class JspcMojo extends AbstractMojo {
     private List<String> getJspFiles(String webAppSourceDirectory)
             throws Exception {
         return FileUtils.getFileNames(new File(webAppSourceDirectory), includes, excludes, true);
-    }
-
-    /**
-     * Until Jasper supports the option to generate the srcs in a different dir
-     * than the classes, this is the best we can do.
-     *
-     * @throws Exception if unable to clean srcs
-     */
-    public void cleanupSrcs() throws Exception {
-        // delete the .java files - depending on keepGenerated setting
-        if (!keepSources) {
-            File generatedClassesDir = new File(generatedClasses);
-
-            if (generatedClassesDir.exists() && generatedClassesDir.isDirectory()) {
-                delete(generatedClassesDir, pathname
-                        -> {
-                    return pathname.isDirectory() || pathname.getName().endsWith(".java");
-                });
-            }
-        }
-    }
-
-    static void delete(File dir, FileFilter filter) {
-        File[] files = dir.listFiles(filter);
-        if (files != null) {
-            for (File f : files) {
-                if (f.isDirectory()) {
-                    delete(f, filter);
-                } else {
-                    f.delete();
-                }
-            }
-        }
-    }
-
-    public static final int bufferSize = 64 * 1024;
-
-    /**
-     * Copy Reader to Writer out until EOF or exception.
-     *
-     * @param in the read to read from (until EOF)
-     * @param out the writer to write to
-     * @throws IOException if unable to copy the streams
-     */
-    public static void copy(Reader in, Writer out)
-            throws IOException {
-        copy(in, out, -1);
-    }
-
-    /**
-     * Copy Reader to Writer for byteCount bytes or until EOF or exception.
-     *
-     * @param in the Reader to read from
-     * @param out the Writer to write to
-     * @param byteCount the number of bytes to copy
-     * @throws IOException if unable to copy streams
-     */
-    public static void copy(Reader in,
-            Writer out,
-            long byteCount)
-            throws IOException {
-        char[] buffer = new char[bufferSize];
-        int len;
-        if (in == null || out == null) {
-            throw new NullPointerException();
-        }
-
-        if (byteCount >= 0) {
-            while (byteCount > 0) {
-                if (byteCount < bufferSize) {
-                    len = in.read(buffer, 0, (int) byteCount);
-                } else {
-                    len = in.read(buffer, 0, bufferSize);
-                }
-
-                if (len == -1) {
-                    break;
-                }
-
-                byteCount -= len;
-                out.write(buffer, 0, len);
-            }
-        } else if (out instanceof PrintWriter) {
-            PrintWriter pout = (PrintWriter) out;
-            while (!pout.checkError()) {
-                len = in.read(buffer, 0, bufferSize);
-                if (len == -1) {
-                    break;
-                }
-                out.write(buffer, 0, len);
-            }
-        } else {
-            while (true) {
-                len = in.read(buffer, 0, bufferSize);
-                if (len == -1) {
-                    break;
-                }
-                out.write(buffer, 0, len);
-            }
-        }
-    }
-
-    /**
-     * Take the web fragment and put it inside a copy of the web.xml.
-     *
-     * You can specify the insertion point by specifying the string in the
-     * insertionMarker configuration entry.
-     *
-     * If you dont specify the insertionMarker, then the fragment will be
-     * inserted at the end of the file just before the &lt;/webapp&gt;
-     *
-     * @throws Exception if unable to merge the web xml
-     */
-    public void mergeWebXml() throws Exception {
-        if (mergeFragment) {
-            // open the src web.xml
-            File webXmlFile = getWebXmlFile();
-
-            if (!webXmlFile.exists()) {
-                getLog().info(webXmlFile.toString() + " does not exist, cannot merge with generated fragment");
-                return;
-            }
-
-            File fragmentWebXml = new File(webXmlFragment);
-            File mergedWebXml = new File(fragmentWebXml.getParentFile(), "web.xml");
-
-            try (BufferedReader webXmlReader = new BufferedReader(new FileReader(webXmlFile));
-                    PrintWriter mergedWebXmlWriter = new PrintWriter(new FileWriter(mergedWebXml))) {
-
-                if (!fragmentWebXml.exists()) {
-                    getLog().info("No fragment web.xml file generated");
-                    //just copy existing web.xml to expected position
-                    copy(webXmlReader, mergedWebXmlWriter);
-                } else {
-                    // read up to the insertion marker or the </webapp> if there is no
-                    // marker
-                    boolean atInsertPoint = false;
-                    boolean atEOF = false;
-                    String marker = (insertionMarker == null || insertionMarker.equals("") ? END_OF_WEBAPP : insertionMarker);
-                    while (!atInsertPoint && !atEOF) {
-                        String line = webXmlReader.readLine();
-                        if (line == null) {
-                            atEOF = true;
-                        } else if (line.contains(marker)) {
-                            atInsertPoint = true;
-                        } else {
-                            mergedWebXmlWriter.println(line);
-                        }
-                    }
-
-                    if (atEOF && !atInsertPoint) {
-                        throw new IllegalStateException("web.xml does not contain insertionMarker " + insertionMarker);
-                    }
-
-                    //put in a context init-param to flag that the contents have been precompiled
-                    mergedWebXmlWriter.println("<context-param><param-name>" + PRECOMPILED_FLAG + "</param-name><param-value>true</param-value></context-param>");
-
-                    // put in the generated fragment
-                    try (BufferedReader fragmentWebXmlReader
-                            = new BufferedReader(new FileReader(fragmentWebXml))) {
-                        copy(fragmentWebXmlReader, mergedWebXmlWriter);
-
-                        // if we inserted just before the </web-app>, put it back in
-                        if (marker.equals(END_OF_WEBAPP)) {
-                            mergedWebXmlWriter.println(END_OF_WEBAPP);
-                        }
-
-                        // copy in the rest of the original web.xml file
-                        copy(webXmlReader, mergedWebXmlWriter);
-                    }
-                }
-            }
-        }
     }
 
     private void prepare() throws Exception {
@@ -558,24 +355,4 @@ public class JspcMojo extends AbstractMojo {
         return providedJars;
     }
 
-    private File getWebXmlFile()
-            throws IOException {
-        File file;
-        File baseDir = project.getBasedir().getCanonicalFile();
-        File defaultWebAppSrcDir = new File(baseDir, "src/main/webapp").getCanonicalFile();
-        File webAppSrcDir = new File(webAppSourceDirectory).getCanonicalFile();
-        File defaultWebXml = new File(defaultWebAppSrcDir, "web.xml").getCanonicalFile();
-
-        //If the web.xml has been changed from the default, try that
-        File webXmlFile = new File(webXml).getCanonicalFile();
-        if (webXmlFile.compareTo(defaultWebXml) != 0) {
-            file = new File(webXml);
-            return file;
-        }
-
-        //If the web app src directory has not been changed from the default, use whatever
-        //is set for the web.xml location
-        file = new File(webAppSrcDir, "web.xml");
-        return file;
-    }
 }
