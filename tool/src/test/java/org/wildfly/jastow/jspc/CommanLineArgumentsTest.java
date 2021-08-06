@@ -109,10 +109,10 @@ public class CommanLineArgumentsTest {
     }
 
     @Test
-    public void testInvalidAddWebXmlMappings() throws Exception {
+    public void testInvalidMergeXmlMappings() throws Exception {
         IllegalArgumentException e = Assert.assertThrows(IllegalArgumentException.class,
                 () -> new JspCCommandLineBuilder()
-                        .set(JspCCommandLineBuilder.JspCArgument.ADD_WEB_XML_MAPPINGS, "invalid-dir/invalid-file")
+                        .set(JspCCommandLineBuilder.JspCArgument.MERGE_XML, "invalid-dir/invalid-file")
                         .build());
         MatcherAssert.assertThat(e.getMessage(), CoreMatchers.containsString("ERROR: Invalid writable file"));
     }

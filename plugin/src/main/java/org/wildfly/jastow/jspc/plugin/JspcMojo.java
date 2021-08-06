@@ -19,11 +19,13 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.apache.log4j.Level;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -148,10 +150,64 @@ public class JspcMojo extends AbstractMojo {
     private String targetPackage;
 
     /**
+     * Debug level for the JspCoutput. Values: OFF, FATAL, ERROR, WARN, INFO, DEBUG, TRACE, ALL.
+     */
+    @Parameter
+    private String debugLevel;
+
+    /**
+     * Add X-Powered-By response header.
+     */
+    @Parameter(defaultValue = "false")
+    private boolean xpoweredBy;
+
+    /**
+     * Remove template text that consists entirely of whitespace.
+     */
+    @Parameter(defaultValue = "false")
+    private boolean trimSpaces;
+
+    /**
+     * Encoding charset for Java classes.
+     */
+    @Parameter
+    private String javaEncoding;
+
+    /**
+     * Encoding to read and write the web.xml and the other generated files.
+     */
+    @Parameter
+    private String webxmlEncoding;
+
+    /**
+     * Number of threads to use to perform the compilation. By default the JspC
+     * default value is used (number of available threads in the target host
+     * divided by 2 plus 1).
+     */
+    @Parameter
+    private Integer threadCount;
+
+    /**
+     * If any JSP gives an error the plugin throws an exception. The same
+     * value is passed to the JspC tool.
+     */
+    @Parameter(defaultValue = "true")
+    private boolean failOnError;
+
+    /**
+     * Stop on first compile error. It needs failOnError to be true (the option
+     * does nothing if failOnError is false).
+     */
+    @Parameter(defaultValue = "false")
+    private boolean failFast;
+
+    /**
      * The JspC instance being used to compile the jsps.
      */
     @Parameter
     private JspC jspc;
+
+    private JspCResults results;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -223,11 +279,15 @@ public class JspcMojo extends AbstractMojo {
                 jspc = new JspC();
             }
 
-            jspc.setUriRoot(webAppSourceDirectory);
-            jspc.setOutputDir(generatedClasses);
-            jspc.setDeleteSources(!keepSources);
-            jspc.setWebxmlLevel(JspC.WEBXML_LEVEL.valueOf(webXmlType));
-            jspc.setWebxmlFile(webXml);
+            jspc.setUriRoot(webAppSourceDirectory)
+                    .setOutputDir(generatedClasses)
+                    .setDeleteSources(!keepSources)
+                    .setWebxmlLevel(JspC.WEBXML_LEVEL.valueOf(webXmlType))
+                    .setWebxmlFile(webXml)
+                    .setXpoweredBy(xpoweredBy)
+                    .setTrimSpaces(trimSpaces)
+                    .setFailFast(failFast)
+                    .setFailOnError(failOnError);
             if (targetPackage != null) {
                 jspc.setTargetPackage(targetPackage);
             }
@@ -236,6 +296,18 @@ public class JspcMojo extends AbstractMojo {
             }
             if (targetVersion != null) {
                 jspc.setCompilerTargetVM(targetVersion);
+            }
+            if (debugLevel != null) {
+                jspc.setDebugLevel(Level.toLevel(debugLevel));
+            }
+            if (javaEncoding != null) {
+                jspc.setJavaEncoding(javaEncoding);
+            }
+            if (webxmlEncoding != null) {
+                jspc.setWebxmlEncoding(Charset.forName(webxmlEncoding));
+            }
+            if (threadCount != null) {
+                jspc.setThreadCount(threadCount);
             }
 
             // JspC#setExtensions() does not exist, so
@@ -247,10 +319,13 @@ public class JspcMojo extends AbstractMojo {
             } else {
                 getLog().info("Compiling " + jspFiles + " from includes=" + includes + " excludes=" + excludes);
                 jspc.setPages(jspFiles);
-                JspCResults results = jspc.execute();
+                results = jspc.execute();
                 if (results.isError()) {
                     getLog().error(String.format("Generation completed for [%d] files with [%d] errors in [%d] milliseconds",
                             results.total(), results.errors(), results.getTime()));
+                    if (failOnError) {
+                        throw new IllegalStateException(String.format("Compilation failed for %d JSP files.", results.errors()));
+                    }
                 } else {
                     getLog().info(String.format("Generation completed for [%d] files with [%d] errors in [%d] milliseconds",
                             results.total(), results.errors(), results.getTime()));
@@ -259,6 +334,14 @@ public class JspcMojo extends AbstractMojo {
         } finally {
             Thread.currentThread().setContextClassLoader(currentClassLoader);
         }
+    }
+
+    public JspC getJspC() {
+        return jspc;
+    }
+
+    public JspCResults getResults() {
+        return results;
     }
 
     private List<String> getJspFiles(String webAppSourceDirectory)

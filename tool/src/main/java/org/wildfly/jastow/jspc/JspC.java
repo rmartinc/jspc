@@ -302,44 +302,44 @@ public class JspC {
         sb.append(nl)
                 .append("Usage: jspc <options> [--] <jsp files>").append(nl)
                 .append("where jsp files is").append(nl)
-                .append("    -webapp <dir>             A directory containing a web-app, whose JSP pages").append(nl)
-                .append("                              will be processed recursively").append(nl)
+                .append("    -webapp <dir>         A directory containing a web-app, whose JSP pages").append(nl)
+                .append("                          will be processed recursively").append(nl)
                 .append("or any number of").append(nl)
-                .append("    <file>                    A file to be parsed as a JSP page").append(nl)
+                .append("    <file>                A file to be parsed as a JSP page").append(nl)
                 .append("where options include:").append(nl)
-                .append("    -help                     Print this help message").append(nl)
-                .append("    -v[v]                     Verbose mode").append(nl)
-                .append("    -d <dir>                  Output Directory (default -Djava.io.tmpdir)").append(nl)
-                .append("    -l                        Outputs the name of the JSP page upon failure").append(nl)
-                .append("    -s                        Outputs the name of the JSP page upon success").append(nl)
-                .append("    -p <name>                 Name of target package (default org.apache.jsp)").append(nl)
-                .append("    -c <name>                 Name of target class name (only applies to first JSP page)").append(nl)
-                .append("    -mapped                   Generates separate write() calls for each HTML line in the JSP").append(nl)
-                .append("    -die <#>                  Generates an error return code (#) on fatal errors (default 1)").append(nl)
-                .append("    -uribase <dir>            The uri directory compilations should be relative to").append(nl)
-                .append("                              (default \"/\")").append(nl)
-                .append("    -uriroot <dir>            Same as -webapp").append(nl)
-                //.append("    -compile                  Compiles generated servlets").append(nl)
-                .append("    -noFailOnError            Do not fail on error and generate XML outputs if required").append(nl)
-                .append("    -failFast                 Stop on first compile error").append(nl)
-                .append("    -webinc <file>            Creates a partial servlet mappings in the file").append(nl)
-                .append("    -webfrg <file>            Creates a complete web-fragment.xml file").append(nl)
-                .append("    -webxml <file>            Creates a complete web.xml in the file").append(nl)
-                .append("    -webxmlencoding <enc>     Set the encoding charset used to read and write the web.xml").append(nl)
-                .append("                              file (default is UTF-8)").append(nl)
-                .append("    -addwebxmlmappings [file] Merge generated web.xml fragment into the web.xml file of the web-app,").append(nl)
-                .append("                              whose JSP pages we are processing, if <file> is passed the merging").append(nl)
-                .append("                              is saved in the passed file instead of the original web.xml in the app.").append(nl)
-                .append("    -ieplugin <clsid>         Java Plugin classid for Internet Explorer").append(nl)
-                .append("    -classpath <path>         Overrides java.class.path system property").append(nl)
-                .append("    -xpoweredBy               Add X-Powered-By response header").append(nl)
-                .append("    -trimSpaces               Remove template text that consists entirely of whitespace").append(nl)
-                .append("    -javaEncoding <enc>       Set the encoding charset for Java classes (default UTF-8)").append(nl)
-                .append("    -source <version>         Set the -source argument to the compiler (default 1.8)").append(nl)
-                .append("    -target <version>         Set the -target argument to the compiler (default 1.8)").append(nl)
-                .append("    -threadCount <count>      Number of threads to use for compilation.").append(nl)
-                .append("                              (\"2.0C\" means two threads per core)").append(nl)
-                .append("    -deletesources            Delete generated Java source files.").append(nl);
+                .append("    -help                 Print this help message").append(nl)
+                .append("    -v[v]                 Verbose mode").append(nl)
+                .append("    -d <dir>              Output Directory (default -Djava.io.tmpdir)").append(nl)
+                .append("    -l                    Outputs the name of the JSP page upon failure").append(nl)
+                .append("    -s                    Outputs the name of the JSP page upon success").append(nl)
+                .append("    -p <name>             Name of target package (default org.apache.jsp)").append(nl)
+                .append("    -c <name>             Name of target class name (only applies to first JSP page)").append(nl)
+                .append("    -mapped               Generates separate write() calls for each HTML line in the JSP").append(nl)
+                .append("    -die <#>              Generates an error return code (#) on fatal errors (default 1)").append(nl)
+                .append("    -uribase <dir>        The uri directory compilations should be relative to").append(nl)
+                .append("                          (default \"/\")").append(nl)
+                .append("    -uriroot <dir>        Same as -webapp").append(nl)
+                //.append("    -compile              Compiles generated servlets").append(nl)
+                .append("    -noFailOnError        Do not fail on error and generate XML outputs if required").append(nl)
+                .append("    -failFast             Stop on first compile error").append(nl)
+                .append("    -webinc <file>        Creates a partial servlet mappings in the file").append(nl)
+                .append("    -webfrg <file>        Creates a complete web-fragment.xml file").append(nl)
+                .append("    -webxml <file>        Creates a complete web.xml in the file").append(nl)
+                .append("    -mergexml <file>      Merges existing web.xml in the app to a different web.xml position").append(nl)
+                .append("    -webxmlencoding <enc> Set the encoding charset used to read and write the web.xml").append(nl)
+                .append("                          file (default is UTF-8)").append(nl)
+                .append("    -addwebxmlmappings    Merge generated web.xml fragment into the web.xml file of the web-app,").append(nl)
+                .append("                          whose JSP pages we are processing. A backup file is created.").append(nl)
+                .append("    -ieplugin <clsid>     Java Plugin classid for Internet Explorer").append(nl)
+                .append("    -classpath <path>     Overrides java.class.path system property").append(nl)
+                .append("    -xpoweredBy           Add X-Powered-By response header").append(nl)
+                .append("    -trimSpaces           Remove template text that consists entirely of whitespace").append(nl)
+                .append("    -javaEncoding <enc>   Set the encoding charset for Java classes (default UTF-8)").append(nl)
+                .append("    -source <version>     Set the -source argument to the compiler (default 1.8)").append(nl)
+                .append("    -target <version>     Set the -target argument to the compiler (default 1.8)").append(nl)
+                .append("    -threadCount <count>  Number of threads to use for compilation.").append(nl)
+                .append("                          (\"2.0C\" means two threads per core)").append(nl)
+                .append("    -deletesources        Delete generated Java source files.").append(nl);
         throw new IllegalArgumentException(sb.toString());
     }
 
@@ -497,9 +497,13 @@ public class JspC {
                     if (webxmlLevel != null) {
                         usage(String.format("Invalid -addwebxmlmappings option because the output was previously set to \"%s\"", webxmlLevel.name()));
                     }
-                    if (i + 1 < args.length && !args[i + 1].startsWith("-")) {
-                        setWebxmlFile(parseWritableFile(args[i], ++i, args));
+                    setWebxmlLevel(WEBXML_LEVEL.MERGE_WEBXML);
+                    break;
+                case "-mergexml":
+                    if (webxmlLevel != null) {
+                        usage(String.format("Invalid -mergexml option because the output was previously set to \"%s\"", webxmlLevel.name()));
                     }
+                    setWebxmlFile(parseWritableFile(args[i], ++i, args));
                     setWebxmlLevel(WEBXML_LEVEL.MERGE_WEBXML);
                     break;
                 case "-webxmlencoding":
@@ -806,6 +810,7 @@ public class JspC {
         if (!webXml.exists()) {
             // just write the file from scratch
             if (this.webxmlFile == null) {
+                // if it is null we are using the same web.xml file in the app
                 this.webxmlFile = webXml.getAbsolutePath();
             }
             writeAllWebXml();
@@ -879,8 +884,9 @@ public class JspC {
                 doc.getDocumentElement().appendChild(doc.createComment("End of web include"));
                 doc.getDocumentElement().appendChild(doc.createTextNode("\n\n    "));
             }
-            if (webxmlFile == null) {
-                // move the current file to a backup just in case and overwrite the web.xml in the app
+            if (webxmlFile == null || new File(webxmlFile).getCanonicalPath().equals(webXml.getCanonicalPath())) {
+                // overwriting the same web.xml in the app adding the bindings
+                // do a backup just in case and overwrite the web.xml in the app
                 webxmlFile = webXml.getAbsolutePath();
                 File backup = new File(webxmlFile + ".jspc-" + new SimpleDateFormat("YYYYMMddHHmmss").format(new Date()));
                 webXml.renameTo(backup);

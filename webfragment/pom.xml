@@ -39,7 +39,7 @@
                             <goal>jspc</goal>
                         </goals>
                         <configuration>
-                            <targetPackage>test.lala.servlet</targetPackage>
+                            <targetPackage>test.webfragment.servlet</targetPackage>
                             <webXmlType>FRG_WEBXML</webXmlType>
                             <webXml>${basedir}/target/classes/META-INF/web-fragment.xml</webXml>
                         </configuration>

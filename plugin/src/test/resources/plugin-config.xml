@@ -1,0 +1,19 @@
+<project>
+    <name>jspc-plugin-test</name>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>jastow-jspc-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>jspc</id>
+                        <goals>
+                            <goal>jspc</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration></configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

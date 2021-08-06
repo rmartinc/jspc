@@ -31,50 +31,48 @@ import org.apache.jasper.JasperException;
  */
 public class JspCCommandLineBuilder {
 
-    protected enum ValueType {NEEDED, OPTIONAL, NONE};
-
     protected enum JspCArgument {
-        WEBAPP("-webapp", ValueType.NEEDED),
+        WEBAPP("-webapp", true),
         HELP("-help"),
         VERBOSE("-v"),
         VERY_VERBOSE("-vv"),
-        OUTPUT_DIR("-d", ValueType.NEEDED),
+        OUTPUT_DIR("-d", true),
         LIST_ERRORS("-l"),
         SHOW_SUCCESS("-s"),
-        PACKAGE("-p", ValueType.NEEDED),
-        CLASSNAME("-c", ValueType.NEEDED),
+        PACKAGE("-p", true),
+        CLASSNAME("-c", true),
         MAPPED("-mapped"),
-        DIE("-die", ValueType.NEEDED),
-        URIBASE("-uribase", ValueType.NEEDED),
-        URIROOT("-uriroot", ValueType.NEEDED),
+        DIE("-die", true),
+        URIBASE("-uribase", true),
+        URIROOT("-uriroot", true),
         NO_FAIL_ON_ERROR("-noFailOnError"),
         FAIL_FAST("-failFast"),
-        WEB_INC("-webinc", ValueType.NEEDED),
-        WEB_FRG("-webfrg", ValueType.NEEDED),
-        WEB_XML("-webxml", ValueType.NEEDED),
-        WEB_XML_ENCODING("-webxmlencoding", ValueType.NEEDED),
-        ADD_WEB_XML_MAPPINGS("-addwebxmlmappings", ValueType.OPTIONAL),
-        IE_PUGLIN("-ieplugin", ValueType.NEEDED),
-        CLASSPATH("-classpath", ValueType.NEEDED),
+        WEB_INC("-webinc", true),
+        WEB_FRG("-webfrg", true),
+        WEB_XML("-webxml", true),
+        WEB_XML_ENCODING("-webxmlencoding", true),
+        ADD_WEB_XML_MAPPINGS("-addwebxmlmappings"),
+        IE_PUGLIN("-ieplugin", true),
+        CLASSPATH("-classpath", true),
         X_POWERED_BY("-xpoweredBy"),
         TRIM_SPACES("-trimSpaces"),
-        JAVA_ENCODING("-javaEncoding", ValueType.NEEDED),
-        SOURCE("-source", ValueType.NEEDED),
-        TARGET("-target", ValueType.NEEDED),
-        THREAD_COUNT("-threadCount", ValueType.NEEDED),
-        DELETE_SOURCES("-deletesources");
+        JAVA_ENCODING("-javaEncoding", true),
+        SOURCE("-source", true),
+        TARGET("-target", true),
+        THREAD_COUNT("-threadCount", true),
+        DELETE_SOURCES("-deletesources"),
+        MERGE_XML("-mergexml", true);
 
         private final String argument;
-        private final ValueType valueType;
+        private final boolean valueNeeded;
 
         private JspCArgument(String argument) {
-            this.argument = argument;
-            this.valueType = ValueType.NONE;
+            this(argument, false);
         }
 
-        private JspCArgument(String argument, ValueType valueType) {
+        private JspCArgument(String argument, boolean valueNeeded) {
             this.argument = argument;
-            this.valueType = valueType;
+            this.valueNeeded = valueNeeded;
         }
 
         public String getArgument() {
@@ -82,15 +80,11 @@ public class JspCCommandLineBuilder {
         }
 
         public boolean isValueNeeded() {
-            return valueType == ValueType.NEEDED;
+            return valueNeeded;
         }
 
         public boolean isValueNone() {
-            return valueType == ValueType.NONE;
-        }
-
-        public boolean isValueOptional() {
-            return valueType == ValueType.OPTIONAL;
+            return !valueNeeded;
         }
     };
 

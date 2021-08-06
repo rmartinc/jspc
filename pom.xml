@@ -34,9 +34,11 @@
         <maven.failsafe.version>3.0.0-M5</maven.failsafe.version>
         <maven.version>3.6.3</maven.version>
         <maven.plugin-tools.version>3.6.0</maven.plugin-tools.version>
+        <maven.plugin-testing-harness.version>3.3.0</maven.plugin-testing-harness.version>
         <version.org.jboss.arquillian.core>1.6.0.Final</version.org.jboss.arquillian.core>
         <version.org.wildfly.arquillian>3.0.1.Final</version.org.wildfly.arquillian>
         <version.junit>4.13.1</version.junit>
+        <version.org.mockito>3.11.2</version.org.mockito>
     </properties>
 
     <modules>
@@ -97,9 +99,24 @@
                 <version>${maven.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-core</artifactId>
+                <version>${maven.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-compat</artifactId>
+                <version>${maven.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.maven.plugin-tools</groupId>
                 <artifactId>maven-plugin-annotations</artifactId>
                 <version>${maven.plugin-tools.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven.plugin-testing</groupId>
+                <artifactId>maven-plugin-testing-harness</artifactId>
+                <version>${maven.plugin-testing-harness.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven</groupId>
@@ -132,6 +149,11 @@
                 <artifactId>junit</artifactId>
                 <version>${version.junit}</version>
             </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${version.org.mockito}</version>
+              </dependency>
         </dependencies>
     </dependencyManagement>
 
