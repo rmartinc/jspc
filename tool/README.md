@@ -41,27 +41,34 @@ java -jar jspc-1.0.0-SNAPSHOT-jar-with-dependencies.jar -help
 
 The utility has been done and tested with wildfly. Under the hood the maven project is configured to use the needed library versions that are present in the exact version used (jastow, metadata, servlet spec, jstl and jsf modules). The idea is the `pom.xml` can have different wildfly (and EAP) profiles to work with different versions. Currently several profiles have been added for wildfly and eap (the default one will point to the last wildfly version tested).
 
-For example the `wildfly18` profile is defined like this:
+For example the `wildfly26` profile is defined like this:
 
 ```xml
-<profile>
-    <id>wildfly18</id>
-    <properties>
-        <version.io.undertow.jastow.jastow>2.0.7.Final</version.io.undertow.jastow.jastow>
-        <version.org.jboss.metadata.jboss-metadata-web>13.0.0.Final</version.org.jboss.metadata.jboss-metadata-web>
-        <version.org.jboss.spec.javax.servlet.jsp.jboss-jsp-api>2.0.0.Final</version.org.jboss.spec.javax.servlet.jsp.jboss-jsp-api>
-        <version.org.jboss.logmanager.log4j-jboss-logmanager>1.2.0.Final</version.org.jboss.logmanager.log4j-jboss-logmanager>
-        <version.org.apache.taglibs.taglibs-standard-spec>1.2.6-RC1</version.org.apache.taglibs.taglibs-standard-spec>
-        <version.org.jboss.spec.javax.faces.jboss-jsf-api>3.0.0.Final</version.org.jboss.spec.javax.faces.jboss-jsf-api>
-        <version.com.sun.faces.jsf-impl>2.3.9.SP03</version.com.sun.faces.jsf-impl>
-    </properties>
-</profile>
+        <profile>
+            <id>wildfly26</id>
+            <properties>
+                <version.io.undertow.jastow.jastow>2.0.10.Final</version.io.undertow.jastow.jastow>
+                <artifact.org.jboss.spec.javax.servlet>jboss-servlet-api_4.0_spec</artifact.org.jboss.spec.javax.servlet>
+                <version.org.jboss.spec.javax.servlet>2.0.0.Final</version.org.jboss.spec.javax.servlet>
+                <group.org.eclipse.jdt.ecj>org.eclipse.jdt</group.org.eclipse.jdt.ecj>
+                <version.org.eclipse.jdt.ecj>3.26.0</version.org.eclipse.jdt.ecj>
+                <artifact.org.glassfish.el>jakarta.el</artifact.org.glassfish.el>
+                <version.org.glassfish.el>3.0.3.jbossorg-4</version.org.glassfish.el>
+                <version.org.jboss.metadata.jboss-metadata-web>14.0.0.Final</version.org.jboss.metadata.jboss-metadata-web>
+                <version.org.jboss.spec.javax.servlet.jsp.jboss-jsp-api>2.0.0.Final</version.org.jboss.spec.javax.servlet.jsp.jboss-jsp-api>
+                <version.org.jboss.logmanager.log4j-jboss-logmanager>1.2.2.Final</version.org.jboss.logmanager.log4j-jboss-logmanager>
+                <version.org.apache.taglibs.taglibs-standard-spec>1.2.6-RC1</version.org.apache.taglibs.taglibs-standard-spec>
+                <version.org.jboss.spec.javax.faces.jboss-jsf-api>3.1.0.SP01</version.org.jboss.spec.javax.faces.jboss-jsf-api>
+                <version.com.sun.faces.jsf-impl>2.3.17.SP01</version.com.sun.faces.jsf-impl>
+                <version.org.wildfly.wildfly.dist>26.0.1.Final</version.org.wildfly.wildfly.dist>
+            </properties>
+        </profile>
 ```
 
-Adding a new (or older) version would need to find the exact version libraries used for that version of the wildfly server and create a new profile. For example to build and use the `eap72` profile the profile should be passed to the commands:
+Adding a new (or older) version would need to find the exact version libraries used for that version of the wildfly server and create a new profile. For example to build and use the `eap74` profile the profile should be passed to the commands:
 
 ```
-mvn clean package -P eap72
-mvn exec:java -P eap72 -Dexec.args="..."
+mvn clean package -P eap74
+mvn exec:java -P eap74 -Dexec.args="..."
 ```
 

@@ -888,7 +888,7 @@ public class JspC {
                 // overwriting the same web.xml in the app adding the bindings
                 // do a backup just in case and overwrite the web.xml in the app
                 webxmlFile = webXml.getAbsolutePath();
-                File backup = new File(webxmlFile + ".jspc-" + new SimpleDateFormat("YYYYMMddHHmmss").format(new Date()));
+                File backup = new File(webxmlFile + ".jspc-" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
                 webXml.renameTo(backup);
             }
             // write the contents to web.xml

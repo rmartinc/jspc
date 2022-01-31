@@ -505,4 +505,31 @@ public class JspCServletContext implements ServletContext {
         return null;
     }
 
+    public ServletRegistration.Dynamic addJspFile(String string, String string1) {
+        return null;
+    }
+
+    public int getSessionTimeout() {
+        return -1;
+    }
+
+    public void setSessionTimeout(int i) {
+        // nothing
+    }
+
+    public String getRequestCharacterEncoding() {
+        return null;
+    }
+
+    public void setRequestCharacterEncoding(String string) {
+        // nothing
+    }
+
+    public String getResponseCharacterEncoding() {
+        return null;
+    }
+
+    public void setResponseCharacterEncoding(String string) {
+        // nothing
+    }
 }
