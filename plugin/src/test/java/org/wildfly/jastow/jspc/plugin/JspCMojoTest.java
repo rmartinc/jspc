@@ -127,7 +127,7 @@ public class JspCMojoTest extends AbstractMojoTestCase {
 
         // assert results
         Assert.assertFalse("Error executing", mojo.getResults().isError());
-        Assert.assertEquals("Executed over 16 files", 16, mojo.getResults().results());
+        Assert.assertEquals("Executed over 15 files", 15, mojo.getResults().results());
         MatcherAssert.assertThat(mojo.getResults().getResults().get(0).getServletName(), CoreMatchers.startsWith("test.mojo.jsps."));
         for (JspCResults.ResultEntry r : mojo.getResults().getResults()) {
             String pathName = r.getServletName().replace(".", File.separator);
@@ -153,7 +153,7 @@ public class JspCMojoTest extends AbstractMojoTestCase {
 
         Assert.assertTrue("Error executing", mojo.getResults().isError());
         Assert.assertEquals("2 Errors", 2, mojo.getResults().errors());
-        Assert.assertEquals("Executed over 18 files", 18, mojo.getResults().total());
+        Assert.assertEquals("Executed over 17 files", 17, mojo.getResults().total());
         Assert.assertTrue("web.xml file does not exist", !Files.exists(Paths.get(tempDir, "web.xml")));
     }
 
@@ -167,7 +167,7 @@ public class JspCMojoTest extends AbstractMojoTestCase {
 
         Assert.assertTrue("Error executing", mojo.getResults().isError());
         Assert.assertEquals("2 Errors", 2, mojo.getResults().errors());
-        Assert.assertEquals("Executed over 18 files", 18, mojo.getResults().total());
+        Assert.assertEquals("Executed over 17 files", 17, mojo.getResults().total());
         for (JspCResults.ResultEntry r : mojo.getResults().getResults()) {
             String pathName = r.getServletName().replace(".", File.separator);
             Assert.assertTrue("Class file exists", Files.exists(Paths.get(tempDir).resolve(pathName + ".class")));

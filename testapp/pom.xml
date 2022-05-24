@@ -28,9 +28,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>
-            <version>7.0</version>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-web-api</artifactId>
+            <version>9.1.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -90,24 +90,14 @@
                 </executions>
                 <dependencies>
                     <dependency>
-                        <groupId>org.jboss.spec.javax.faces</groupId>
-                        <artifactId>jboss-jsf-api_2.3_spec</artifactId>
-                        <version>${version.org.jboss.spec.javax.faces.jboss-jsf-api}</version>
+                        <groupId>jakarta.servlet.jsp.jstl</groupId>
+                        <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+                        <version>${version.jakarta.servlet.jsp.jstl.jstl-api}</version>
                     </dependency>
                     <dependency>
-                        <groupId>com.sun.faces</groupId>
-                        <artifactId>jsf-impl</artifactId>
-                        <version>${version.com.sun.faces.jsf-impl}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.taglibs</groupId>
-                        <artifactId>taglibs-standard-spec</artifactId>
-                        <version>${version.org.apache.taglibs.taglibs-standard-spec}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.taglibs</groupId>
-                        <artifactId>taglibs-standard-impl</artifactId>
-                        <version>${version.org.apache.taglibs.taglibs-standard-spec}</version>
+                        <groupId>org.glassfish.web</groupId>
+                        <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+                        <version>${version.org.glassfish.web.jstl}</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -132,7 +122,7 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.wildfly</groupId>
-                                    <artifactId>wildfly-dist</artifactId>
+                                    <artifactId>wildfly-preview-dist</artifactId>
                                     <version>${version.org.wildfly.wildfly.dist}</version>
                                     <type>zip</type>
                                     <overWrite>false</overWrite>
@@ -163,7 +153,7 @@
                         </property>
                         <property>
                             <name>jbossHome</name>
-                            <value>target/wildfly-${version.org.wildfly.wildfly.dist}</value>
+                            <value>target/wildfly-preview-${version.org.wildfly.wildfly.dist}</value>
                         </property>
                     </systemProperties>
                 </configuration>

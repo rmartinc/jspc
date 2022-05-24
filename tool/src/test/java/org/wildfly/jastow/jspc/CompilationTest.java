@@ -224,8 +224,8 @@ public class CompilationTest {
                 .execute();
         Assert.assertFalse("Error result", results.isError());
         Assert.assertEquals("No error", 0, results.errors());
-        Assert.assertEquals("No error", 17, results.total());
-        Assert.assertEquals("No error", 17, results.results());
+        Assert.assertEquals("No error", 16, results.total());
+        Assert.assertEquals("No error", 16, results.results());
         Assert.assertTrue("web.xml file exists", Files.exists(Paths.get(tempDir + "/web.xml")));
         Assert.assertTrue("web.xml is not empty", Files.size(Paths.get(tempDir + "/web.xml")) > 0);
         MatcherAssert.assertThat(new String(Files.readAllBytes(Paths.get(tempDir + "/web.xml")), StandardCharsets.UTF_8),
@@ -247,8 +247,8 @@ public class CompilationTest {
                 .execute();
         Assert.assertFalse("Error result", results.isError());
         Assert.assertEquals("No error", 0, results.errors());
-        Assert.assertEquals("No error", 17, results.total());
-        Assert.assertEquals("No error", 17, results.results());
+        Assert.assertEquals("No error", 16, results.total());
+        Assert.assertEquals("No error", 16, results.results());
         Assert.assertTrue("web-fragment.xml file exists", Files.exists(Paths.get(tempDir + "/web-fragment.xml")));
         Assert.assertTrue("web-fragment.xml is not empty", Files.size(Paths.get(tempDir + "/web-fragment.xml")) > 0);
     }

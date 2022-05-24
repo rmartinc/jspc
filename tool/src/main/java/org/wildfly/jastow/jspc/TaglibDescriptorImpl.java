@@ -15,7 +15,7 @@
  */
 package org.wildfly.jastow.jspc;
 
-import javax.servlet.descriptor.TaglibDescriptor;
+import jakarta.servlet.descriptor.TaglibDescriptor;
 
 /**
  *

@@ -147,13 +147,6 @@ public class AppITCase {
         MatcherAssert.assertThat(doGet("el-constants.jsp"), CoreMatchers.containsString("Integer.MAX_VALUE: 2147483647"));
     }
 
-    // JSF
-
-    @Test
-    public void testJsfConvertor() throws IOException {
-        MatcherAssert.assertThat(doGet("faces/Convertor.jsp"), CoreMatchers.containsString("Celsius"));
-    }
-
     // web-fragment from the other sub project
 
     @Test

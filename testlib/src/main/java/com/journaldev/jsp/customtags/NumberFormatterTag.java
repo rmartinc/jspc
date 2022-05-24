@@ -1,11 +1,10 @@
 package com.journaldev.jsp.customtags;
 
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.SkipPageException;
+import jakarta.servlet.jsp.tagext.SimpleTagSupport;
 import java.io.IOException;
 import java.text.DecimalFormat;
-
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.SkipPageException;
-import javax.servlet.jsp.tagext.SimpleTagSupport;
 
 public class NumberFormatterTag extends SimpleTagSupport {
 

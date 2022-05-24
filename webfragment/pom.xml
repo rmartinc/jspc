@@ -47,14 +47,14 @@
                 </executions>
                 <dependencies>
                     <dependency>
-                        <groupId>org.apache.taglibs</groupId>
-                        <artifactId>taglibs-standard-spec</artifactId>
-                        <version>${version.org.apache.taglibs.taglibs-standard-spec}</version>
+                        <groupId>jakarta.servlet.jsp.jstl</groupId>
+                        <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+                        <version>${version.jakarta.servlet.jsp.jstl.jstl-api}</version>
                     </dependency>
                     <dependency>
-                        <groupId>org.apache.taglibs</groupId>
-                        <artifactId>taglibs-standard-impl</artifactId>
-                        <version>${version.org.apache.taglibs.taglibs-standard-spec}</version>
+                        <groupId>org.glassfish.web</groupId>
+                        <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+                        <version>${version.org.glassfish.web.jstl}</version>
                     </dependency>
                 </dependencies>
             </plugin>

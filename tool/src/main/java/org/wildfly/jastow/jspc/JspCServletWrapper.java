@@ -15,12 +15,12 @@
  */
 package org.wildfly.jastow.jspc;
 
+import jakarta.servlet.ServletConfig;
 import java.io.FileNotFoundException;
-import javax.servlet.ServletConfig;
+import org.apache.jasper.JasperException;
 import org.apache.jasper.Options;
 import org.apache.jasper.compiler.JspRuntimeContext;
 import org.apache.jasper.servlet.JspServletWrapper;
-import org.apache.jasper.JasperException;
 
 /**
  *

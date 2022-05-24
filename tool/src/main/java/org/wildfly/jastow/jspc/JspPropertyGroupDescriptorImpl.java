@@ -15,8 +15,8 @@
  */
 package org.wildfly.jastow.jspc;
 
+import jakarta.servlet.descriptor.JspPropertyGroupDescriptor;
 import java.util.Collection;
-import javax.servlet.descriptor.JspPropertyGroupDescriptor;
 import org.apache.jasper.deploy.JspPropertyGroup;
 
 /**

@@ -15,10 +15,10 @@
  */
 package org.wildfly.jastow.jspc;
 
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
 import java.util.Collections;
 import java.util.Enumeration;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 
 /**
  *
