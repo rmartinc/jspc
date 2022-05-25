@@ -229,9 +229,9 @@ public class CompilationTest {
         Assert.assertTrue("web.xml file exists", Files.exists(Paths.get(tempDir + "/web.xml")));
         Assert.assertTrue("web.xml is not empty", Files.size(Paths.get(tempDir + "/web.xml")) > 0);
         MatcherAssert.assertThat(new String(Files.readAllBytes(Paths.get(tempDir + "/web.xml")), StandardCharsets.UTF_8),
-                CoreMatchers.containsString("<servlet-name>FacesServlet</servlet-name>"));
+                CoreMatchers.containsString("http://tomcat.apache.org/example-taglib"));
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        Schema schema = schemaFactory.newSchema(new File(getClass().getClassLoader().getResource("web-app_3_1.xsd").getFile()));
+        Schema schema = schemaFactory.newSchema(new File(getClass().getClassLoader().getResource("web-app_5_0.xsd").getFile()));
         Validator validator = schema.newValidator();
         validator.validate(new StreamSource(Paths.get(tempDir + "/web.xml").toFile()));
     }
