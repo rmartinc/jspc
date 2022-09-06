@@ -90,4 +90,9 @@ public class JspPropertyGroupDescriptorImpl implements JspPropertyGroupDescripto
     public String getErrorOnUndeclaredNamespace() {
         return propertyGroup.getErrorOnUndeclaredNamespace();
     }
+
+    @Override
+    public String getErrorOnELNotFound() {
+        return propertyGroup.getErrorOnELNotFound();
+    }
 }

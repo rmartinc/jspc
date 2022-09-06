@@ -60,7 +60,8 @@ import org.apache.jasper.Constants;
 import org.apache.jasper.JasperException;
 import org.apache.jasper.deploy.JspPropertyGroup;
 import org.apache.jasper.deploy.TagLibraryInfo;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jboss.metadata.parser.servlet.WebMetaDataParser;
 import org.jboss.metadata.parser.util.MetaDataElementParser;
 import org.jboss.metadata.property.CompositePropertyResolver;
@@ -76,7 +77,7 @@ import org.jboss.metadata.web.spec.WebMetaData;
  */
 public class JspCServletContext implements ServletContext {
 
-    private static final Logger log = Logger.getLogger(JspCServletContext.class);
+    private final Logger log = LogManager.getLogger(JspC.class.getPackageName());
 
     private final Map<String,String> initParams = new ConcurrentHashMap<>();
     private final Map<String,Object> attrs = new HashMap<>();
@@ -266,28 +267,8 @@ public class JspCServletContext implements ServletContext {
     }
 
     @Override
-    public Servlet getServlet(String name) throws ServletException {
-        return null;
-    }
-
-    @Override
-    public Enumeration<Servlet> getServlets() {
-        return Collections.emptyEnumeration();
-    }
-
-    @Override
-    public Enumeration<String> getServletNames() {
-        return Collections.emptyEnumeration();
-    }
-
-    @Override
     public void log(String msg) {
         log.warn(msg);
-    }
-
-    @Override
-    public void log(Exception exception, String msg) {
-        log.warn(msg, exception);
     }
 
     @Override

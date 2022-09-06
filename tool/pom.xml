@@ -31,7 +31,7 @@
     <dependencies>
         <dependency>
             <groupId>io.undertow.jastow</groupId>
-            <artifactId>jastow-jakarta</artifactId>
+            <artifactId>jastow</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jboss.metadata</groupId>
@@ -42,8 +42,8 @@
             <artifactId>jakarta.servlet.jsp-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.jboss.logmanager</groupId>
-            <artifactId>log4j-jboss-logmanager</artifactId>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
         </dependency>
         <dependency>
             <groupId>jakarta.servlet</groupId>
@@ -54,8 +54,8 @@
             <artifactId>ecj</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>jakarta.el</artifactId>
+            <groupId>org.glassfish.expressly</groupId>
+            <artifactId>expressly</artifactId>
         </dependency>
 
         <!-- dependencies for standard TLDs -JSP and JSF- -->
@@ -131,9 +131,6 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven.surefire.version}</version>
                 <configuration>
-                    <systemPropertyVariables>
-                        <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-                    </systemPropertyVariables>
                 </configuration>
             </plugin>
         </plugins>

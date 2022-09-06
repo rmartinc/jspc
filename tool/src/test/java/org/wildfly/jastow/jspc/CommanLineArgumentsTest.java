@@ -22,7 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
@@ -195,7 +195,6 @@ public class CommanLineArgumentsTest {
         Assert.assertNull("WEB output options", jspc.getWebxmlLevel());
         Assert.assertNull("WEB output options", jspc.getWebxmlFile());
         Assert.assertEquals("webxmlEncoding option", StandardCharsets.UTF_8, jspc.getWebxmlEncoding());
-        Assert.assertEquals("ieplugin option", "clsid:8AD9C840-044E-11D1-B3E9-00805F499D93", jspc.getOptions().getIeClassId());
         Assert.assertNull("classpath option", jspc.getOptions().getClassPath());
         Assert.assertEquals("xpoweredby option", false, jspc.getOptions().isXpoweredBy());
         Assert.assertEquals("trimSpaces option", false, jspc.getOptions().getTrimSpaces());
@@ -223,7 +222,6 @@ public class CommanLineArgumentsTest {
                     .set(JspCCommandLineBuilder.JspCArgument.FAIL_FAST)
                     .set(JspCCommandLineBuilder.JspCArgument.WEB_INC, webincFile)
                     .set(JspCCommandLineBuilder.JspCArgument.WEB_XML_ENCODING, StandardCharsets.ISO_8859_1.displayName())
-                    .set(JspCCommandLineBuilder.JspCArgument.IE_PUGLIN, "another-plugin-id")
                     .set(JspCCommandLineBuilder.JspCArgument.CLASSPATH, "lala.jar")
                     .set(JspCCommandLineBuilder.JspCArgument.X_POWERED_BY)
                     .set(JspCCommandLineBuilder.JspCArgument.TRIM_SPACES)
@@ -246,7 +244,6 @@ public class CommanLineArgumentsTest {
             Assert.assertEquals("WEB output options", JspC.WEBXML_LEVEL.INC_WEBXML, jspc.getWebxmlLevel());
             Assert.assertEquals("WEB output options", webincFile, jspc.getWebxmlFile());
             Assert.assertEquals("webxmlEncoding option", StandardCharsets.ISO_8859_1, jspc.getWebxmlEncoding());
-            Assert.assertEquals("ieplugin option", "another-plugin-id", jspc.getOptions().getIeClassId());
             Assert.assertEquals("classpath option", "lala.jar", jspc.getOptions().getClassPath());
             Assert.assertEquals("xpoweredby option", true, jspc.getOptions().isXpoweredBy());
             Assert.assertEquals("trimSpaces option", true, jspc.getOptions().getTrimSpaces());

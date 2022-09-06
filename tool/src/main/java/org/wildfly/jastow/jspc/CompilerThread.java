@@ -15,7 +15,8 @@
  */
 package org.wildfly.jastow.jspc;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -23,7 +24,7 @@ import org.apache.log4j.Logger;
  */
 class CompilerThread extends Thread {
 
-    private static final Logger log = Logger.getLogger(JspC.class);
+    private final Logger log = LogManager.getLogger(JspC.class.getPackageName());
 
     private final JspC jspc;
 

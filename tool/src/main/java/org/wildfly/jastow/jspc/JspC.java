@@ -56,9 +56,10 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.jasper.JasperException;
 import org.apache.jasper.compiler.JspRuntimeContext;
 import org.apache.jasper.deploy.TagLibraryInfo;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -71,7 +72,7 @@ import org.xml.sax.SAXException;
  */
 public class JspC {
 
-    private static final Logger log = Logger.getLogger(JspC.class);
+    private Logger log = LogManager.getLogger(JspC.class.getPackageName());
 
     public enum WEBXML_LEVEL {INC_WEBXML, FRG_WEBXML, ALL_WEBXML, MERGE_WEBXML};
 
@@ -95,13 +96,6 @@ public class JspC {
     private boolean failFast = false;
     private int threadCount = (Runtime.getRuntime().availableProcessors() / 2) + 1;
     private boolean deleteSources = false;
-
-    static {
-        // TODO: using log4j because logmanager needs to be initialized at
-        //       startup using the "-Djava.util.logging.manager=org.jboss.logmanager.LogManager"
-        //       and that doesn't work inside the "exec-maven-plugin" easily
-        PropertyConfigurator.configure(Thread.currentThread().getContextClassLoader().getResource("log4j.properties"));
-    }
 
     // getters
 
@@ -150,8 +144,7 @@ public class JspC {
     }
 
     public Level getDebugLevel() {
-        Logger jspcLogger = Logger.getLogger(this.getClass().getPackage().getName());
-        return jspcLogger.getLevel();
+        return log.getLevel();
     }
 
     public boolean getDeleteSources() {
@@ -186,8 +179,8 @@ public class JspC {
     }
 
     public JspC setDebugLevel(Level level) {
-        Logger jspcLogger = Logger.getLogger(this.getClass().getPackage().getName());
-        jspcLogger.setLevel(level);
+        this.log = LogManager.getLogger(this.getClass().getPackage().getName());
+        Configurator.setLevel(this.log.getName(), level);
         return this;
     }
 
@@ -233,11 +226,6 @@ public class JspC {
 
     public JspC setWebxmlEncoding(Charset webxmlEncoding) {
         this.webxmlEncoding = webxmlEncoding;
-        return this;
-    }
-
-    public JspC setIeClassId(String ieClassId) {
-        this.options.setIeClassId(ieClassId);
         return this;
     }
 
@@ -330,7 +318,6 @@ public class JspC {
                 .append("                          file (default is UTF-8)").append(nl)
                 .append("    -addwebxmlmappings    Merge generated web.xml fragment into the web.xml file of the web-app,").append(nl)
                 .append("                          whose JSP pages we are processing. A backup file is created.").append(nl)
-                .append("    -ieplugin <clsid>     Java Plugin classid for Internet Explorer").append(nl)
                 .append("    -classpath <path>     Overrides java.class.path system property").append(nl)
                 .append("    -xpoweredBy           Add X-Powered-By response header").append(nl)
                 .append("    -trimSpaces           Remove template text that consists entirely of whitespace").append(nl)
@@ -408,9 +395,8 @@ public class JspC {
     }
 
     private void setDebugLevelIfNecessary(Level l) {
-        Logger jspcLogger = Logger.getLogger(this.getClass().getPackage().getName());
-        if (jspcLogger.getLevel().toInt() > l.toInt()) {
-            jspcLogger.setLevel(l);
+        if (this.log.getLevel().compareTo(l) < 0) {
+            setDebugLevel(l);
         }
     }
 
@@ -508,9 +494,6 @@ public class JspC {
                     break;
                 case "-webxmlencoding":
                     setWebxmlEncoding(parseCharset(args[i], ++i, args));
-                    break;
-                case "-ieplugin":
-                    setIeClassId(getArgumentIndex(args[i], ++i, args));
                     break;
                 case "-classpath":
                     setClassPath(getArgumentIndex(args[i], ++i, args));
@@ -649,7 +632,7 @@ public class JspC {
 
     // methods to locate TLD inside jars and app
 
-    private static void scanJar(URL url, Pattern pattern, HashMap<String, TagLibraryInfo> jspTagLibraries) throws IOException {
+    private void scanJar(URL url, Pattern pattern, HashMap<String, TagLibraryInfo> jspTagLibraries) throws IOException {
         JarURLConnection conn = (JarURLConnection) url.openConnection();
         JarFile jarFile = conn.getJarFile();
         Enumeration<JarEntry> e = jarFile.entries();

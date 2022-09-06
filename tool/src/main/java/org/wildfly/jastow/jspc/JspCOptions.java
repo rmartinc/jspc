@@ -36,7 +36,6 @@ public class JspCOptions implements Options {
     private boolean smapSuppressed = true;
     private boolean smapDumped = false;
     private boolean trimSpaces = false;
-    private String ieClassId = "clsid:8AD9C840-044E-11D1-B3E9-00805F499D93";
     private File scratchDir = new File(System.getProperty("java.io.tmpdir")).getAbsoluteFile();
     private String classPath = null;
     private String compiler = null;
@@ -146,16 +145,6 @@ public class JspCOptions implements Options {
 
     public JspCOptions setTrimSpaces(boolean trimSpaces) {
         this.trimSpaces = trimSpaces;
-        return this;
-    }
-
-    @Override
-    public String getIeClassId() {
-        return ieClassId;
-    }
-
-    public JspCOptions setIeClassId(String ieClassId) {
-        this.ieClassId = ieClassId;
         return this;
     }
 

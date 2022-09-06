@@ -52,7 +52,6 @@ public class JspCCommandLineBuilder {
         WEB_XML("-webxml", true),
         WEB_XML_ENCODING("-webxmlencoding", true),
         ADD_WEB_XML_MAPPINGS("-addwebxmlmappings"),
-        IE_PUGLIN("-ieplugin", true),
         CLASSPATH("-classpath", true),
         X_POWERED_BY("-xpoweredBy"),
         TRIM_SPACES("-trimSpaces"),
