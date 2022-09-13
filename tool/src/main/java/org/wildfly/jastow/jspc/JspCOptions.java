@@ -51,6 +51,7 @@ public class JspCOptions implements Options {
     private boolean caching = true;
     protected final Map<String, TagLibraryInfo> cache = new HashMap<>();
     private boolean optimizeJSPScriptlets = false;
+    private boolean keepGenerated = true;
     
     public JspCOptions(JspCServletContext ctx) {
         jspConfig = new JspConfig(ctx);
@@ -69,8 +70,12 @@ public class JspCOptions implements Options {
 
     @Override
     public boolean getKeepGenerated() {
-        // nonsense no keep generating the files
-        return true;
+        return keepGenerated;
+    }
+
+    public JspCOptions setKeepGenerated(boolean keepGenerated) {
+        this.keepGenerated = keepGenerated;
+        return this;
     }
 
     @Override

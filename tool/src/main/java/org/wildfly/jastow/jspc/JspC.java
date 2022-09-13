@@ -95,7 +95,6 @@ public class JspC {
     private boolean failOnError = true;
     private boolean failFast = false;
     private int threadCount = (Runtime.getRuntime().availableProcessors() / 2) + 1;
-    private boolean deleteSources = false;
 
     // getters
 
@@ -148,7 +147,7 @@ public class JspC {
     }
 
     public boolean getDeleteSources() {
-        return deleteSources;
+        return !this.options.getKeepGenerated();
     }
 
     // setters
@@ -275,7 +274,7 @@ public class JspC {
     }
 
     public JspC setDeleteSources(boolean deleteSources) {
-        this.deleteSources = deleteSources;
+        this.options.setKeepGenerated(!deleteSources);
         return this;
     }
 
@@ -1093,11 +1092,6 @@ public class JspC {
             jsw.compile();
             String servletName = ("".equals(jsw.getServletPackageName()))?
                     jsw.getServletClassName() : jsw.getServletPackageName() + '.' + jsw.getServletClassName();
-            // delete java file if necessary
-            if (deleteSources) {
-                final Path javaFile = this.options.getScratchDir().toPath().resolve(servletName.replace('.', File.separatorChar) + ".java");
-                Files.deleteIfExists(javaFile);
-            }
             // add the results to the list
             this.results.addSuccess(jspUri, servletName);
 
