@@ -91,8 +91,8 @@ public class JspCMojoTest extends AbstractMojoTestCase {
         setVariableValueToObject(mojo, "javaEncoding", "UTF-8");
         setVariableValueToObject(mojo, "webxmlEncoding", "UTF-8");
         setVariableValueToObject(mojo, "targetPackage", "test.mojo.jsps");
-        setVariableValueToObject(mojo, "sourceVersion", "1.8");
-        setVariableValueToObject(mojo, "targetVersion", "1.8");
+        setVariableValueToObject(mojo, "sourceVersion", "11");
+        setVariableValueToObject(mojo, "targetVersion", "11");
         setVariableValueToObject(mojo, "keepSources", false);
 
         MavenProject project = Mockito.mock(MavenProject.class);
@@ -121,8 +121,8 @@ public class JspCMojoTest extends AbstractMojoTestCase {
         Assert.assertEquals("javaEncoding is OK", "UTF-8", mojo.getJspC().getOptions().getJavaEncoding());
         Assert.assertEquals("webxmlEncoding is OK", StandardCharsets.UTF_8, mojo.getJspC().getWebxmlEncoding());
         Assert.assertEquals("targetPackage is OK", "test.mojo.jsps", mojo.getJspC().getTargetPackage());
-        Assert.assertEquals("sourceVersion is OK", "1.8", mojo.getJspC().getOptions().getCompilerSourceVM());
-        Assert.assertEquals("targetVersion is OK", "1.8", mojo.getJspC().getOptions().getCompilerTargetVM());
+        Assert.assertEquals("sourceVersion is OK", "11", mojo.getJspC().getOptions().getCompilerSourceVM());
+        Assert.assertEquals("targetVersion is OK", "11", mojo.getJspC().getOptions().getCompilerTargetVM());
         Assert.assertEquals("keepSources is OK", true, mojo.getJspC().getDeleteSources());
 
         // assert results

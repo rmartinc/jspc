@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
 import org.apache.logging.log4j.Level;
+import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
@@ -199,8 +200,8 @@ public class CommanLineArgumentsTest {
         Assert.assertEquals("xpoweredby option", false, jspc.getOptions().isXpoweredBy());
         Assert.assertEquals("trimSpaces option", false, jspc.getOptions().getTrimSpaces());
         Assert.assertEquals("javaEncoding option", StandardCharsets.UTF_8.displayName(), jspc.getOptions().getJavaEncoding());
-        Assert.assertEquals("target option", "1.8", jspc.getOptions().getCompilerSourceVM());
-        Assert.assertEquals("target option", "1.8", jspc.getOptions().getCompilerTargetVM());
+        Assert.assertEquals("target option", CompilerOptions.VERSION_11, jspc.getOptions().getCompilerSourceVM());
+        Assert.assertEquals("target option", CompilerOptions.VERSION_11, jspc.getOptions().getCompilerTargetVM());
         Assert.assertEquals("threadCount option", (Runtime.getRuntime().availableProcessors() / 2) + 1, jspc.getThreadCount());
         Assert.assertEquals("deletesources option", false, jspc.getDeleteSources());
     }

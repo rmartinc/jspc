@@ -322,8 +322,8 @@ public class JspC {
                 .append("    -xpoweredBy           Add X-Powered-By response header").append(nl)
                 .append("    -trimSpaces           Remove template text that consists entirely of whitespace").append(nl)
                 .append("    -javaEncoding <enc>   Set the encoding charset for Java classes (default UTF-8)").append(nl)
-                .append("    -source <version>     Set the -source argument to the compiler (default 1.8)").append(nl)
-                .append("    -target <version>     Set the -target argument to the compiler (default 1.8)").append(nl)
+                .append("    -source <version>     Set the -source argument to the compiler (default 11)").append(nl)
+                .append("    -target <version>     Set the -target argument to the compiler (default 11)").append(nl)
                 .append("    -threadCount <count>  Number of threads to use for compilation.").append(nl)
                 .append("                          (\"2.0C\" means two threads per core)").append(nl)
                 .append("    -deletesources        Delete generated Java source files.").append(nl);

@@ -22,6 +22,7 @@ import org.apache.jasper.Options;
 import org.apache.jasper.compiler.JspConfig;
 import org.apache.jasper.compiler.TagPluginManager;
 import org.apache.jasper.deploy.TagLibraryInfo;
+import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 
 /**
  *
@@ -39,8 +40,8 @@ public class JspCOptions implements Options {
     private File scratchDir = new File(System.getProperty("java.io.tmpdir")).getAbsoluteFile();
     private String classPath = null;
     private String compiler = null;
-    private String compilerTargetVM = "1.8";
-    private String compilerSourceVM = "1.8";
+    private String compilerTargetVM = CompilerOptions.VERSION_11;
+    private String compilerSourceVM = CompilerOptions.VERSION_11;
     private String javaEncoding = "UTF-8";
     private boolean fork = false;
     private JspConfig jspConfig = null;
