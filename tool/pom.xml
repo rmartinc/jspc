@@ -111,6 +111,9 @@
                         <manifest>
                             <mainClass>org.wildfly.jastow.jspc.JspC</mainClass>
                         </manifest>
+                        <manifestEntries>
+                            <Multi-Release>true</Multi-Release>
+                        </manifestEntries>
                     </archive>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>

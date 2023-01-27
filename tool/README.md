@@ -12,7 +12,7 @@ mvn clean package
 
 ## How to use it
 
-For the moment the tool should be used using the [exec-maven-plugin](https://www.mojohaus.org/exec-maven-plugin/). So the options should be passed using the `exec.args` system property of the exec plugin. For example, assuming the WAR exploded application is inside the directory `/path/to/webapp`, the following commands creates a `precompiled-jsp.jar` library with all the compiled classes in it:
+For the moment the tool should be executed using the [exec-maven-plugin](https://www.mojohaus.org/exec-maven-plugin/). So the options should be passed using the `exec.args` system property of the exec plugin. For example, assuming the WAR exploded application is inside the directory `/path/to/webapp`, the following commands creates a `precompiled-jsp.jar` library with all the compiled classes in it:
 
 ```
 mkdir -p /precompiled/classes/META-INF
@@ -39,36 +39,34 @@ java -jar jspc-1.0.0-SNAPSHOT-jar-with-dependencies.jar -help
 
 ## What wildfly versions are supposed to work
 
-The utility has been done and tested with wildfly. Under the hood the maven project is configured to use the needed library versions that are present in the exact version used (jastow, metadata, servlet spec, jstl and jsf modules). The idea is the `pom.xml` can have different wildfly (and EAP) profiles to work with different versions. Currently several profiles have been added for wildfly and eap (the default one will point to the last wildfly version tested).
+The utility has been done and tested with wildfly. Under the hood the maven project is configured to use the needed library versions that are present in the exact version used (jastow, metadata, servlet spec, jstl,...). The idea is the `pom.xml` can have different wildfly (and EAP) profiles to work with different versions. Currently several profiles have been added for wildfly and eap (the default one will point to the last wildfly version tested).
 
-For example the `wildfly26` profile is defined like this:
+For example the `wildfly27` profile is defined like this:
 
 ```xml
         <profile>
-            <id>wildfly26</id>
+            <id>wildfly27</id>
             <properties>
-                <version.io.undertow.jastow.jastow>2.0.10.Final</version.io.undertow.jastow.jastow>
-                <artifact.org.jboss.spec.javax.servlet>jboss-servlet-api_4.0_spec</artifact.org.jboss.spec.javax.servlet>
-                <version.org.jboss.spec.javax.servlet>2.0.0.Final</version.org.jboss.spec.javax.servlet>
-                <group.org.eclipse.jdt.ecj>org.eclipse.jdt</group.org.eclipse.jdt.ecj>
-                <version.org.eclipse.jdt.ecj>3.26.0</version.org.eclipse.jdt.ecj>
-                <artifact.org.glassfish.el>jakarta.el</artifact.org.glassfish.el>
-                <version.org.glassfish.el>3.0.3.jbossorg-4</version.org.glassfish.el>
-                <version.org.jboss.metadata.jboss-metadata-web>14.0.0.Final</version.org.jboss.metadata.jboss-metadata-web>
-                <version.org.jboss.spec.javax.servlet.jsp.jboss-jsp-api>2.0.0.Final</version.org.jboss.spec.javax.servlet.jsp.jboss-jsp-api>
-                <version.org.jboss.logmanager.log4j-jboss-logmanager>1.2.2.Final</version.org.jboss.logmanager.log4j-jboss-logmanager>
-                <version.org.apache.taglibs.taglibs-standard-spec>1.2.6-RC1</version.org.apache.taglibs.taglibs-standard-spec>
-                <version.org.jboss.spec.javax.faces.jboss-jsf-api>3.1.0.SP01</version.org.jboss.spec.javax.faces.jboss-jsf-api>
-                <version.com.sun.faces.jsf-impl>2.3.17.SP01</version.com.sun.faces.jsf-impl>
-                <version.org.wildfly.wildfly.dist>26.0.1.Final</version.org.wildfly.wildfly.dist>
+                <version.io.undertow.jastow.jastow>2.2.4.Final</version.io.undertow.jastow.jastow>
+                <version.jakarta.servlet.servlet-api>6.0.0</version.jakarta.servlet.servlet-api>
+                <version.org.eclipse.jdt.ecj>3.31.0</version.org.eclipse.jdt.ecj>
+                <version.org.glassfish.expressly>5.0.0</version.org.glassfish.expressly>
+                <version.org.jboss.metadata.jboss-metadata-web>15.2.0.Final</version.org.jboss.metadata.jboss-metadata-web>
+                <version.jakarta.servlet.jsp.jsp-api>3.1.0</version.jakarta.servlet.jsp.jsp-api>
+                <version.org.apache.logging.log4j>2.19.0</version.org.apache.logging.log4j>
+                <version.jakarta.servlet.jsp.jstl.jstl-api>3.0.0</version.jakarta.servlet.jsp.jstl.jstl-api>
+                <version.org.glassfish.web.jstl>3.0.0</version.org.glassfish.web.jstl>
+                <version.org.wildfly.wildfly.dist>27.0.0.Final</version.org.wildfly.wildfly.dist>
             </properties>
         </profile>
 ```
 
-Adding a new (or older) version would need to find the exact version libraries used for that version of the wildfly server and create a new profile. For example to build and use the `eap74` profile the profile should be passed to the commands:
+Adding a newer version would need to find the exact version libraries used for that version of the wildfly server and create a new profile. For example to build and use the `eap80beta` that profile should be passed to the command line:
 
 ```
-mvn clean package -P eap74
-mvn exec:java -P eap74 -Dexec.args="..."
+mvn clean package -P eap80beta
+mvn exec:java -P eap80beta -Dexec.args="..."
 ```
+
+The default `jakarta` branch is prepared to work with the new jakarta ee 10 compatible version of wildfly (since wildfly-27). The `javax` branch is for the old jakarta 9 versions although it is not updated anymore.
 
